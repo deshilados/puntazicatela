@@ -82,7 +82,6 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useProductsStore } from '@/stores/productsStore';
-import type { Product } from '@/stores/productsStore';
 import ProductCard from '@/components/textil/ProductCard.vue';
 
 const route = useRoute();

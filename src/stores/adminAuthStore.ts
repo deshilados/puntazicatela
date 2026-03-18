@@ -12,7 +12,7 @@ export const useAdminAuthStore = defineStore('adminAuth', {
     isAdmin: (state) => !!state.user && state.user.rol === 'admin'
   },
   actions: {
-    async login(email: string, password: string) {
+    async login(email: string, _password: string) {
       this.loading = true;
       this.error = null;
       const { data, error } = await supabase
