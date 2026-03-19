@@ -1,6 +1,6 @@
 <template>
   <Navbar />
-  <div class="mt-5 pt-5" style="min-height: 70vh">
+  <div class="pt-5" style="min-height: 70vh">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -17,7 +17,11 @@
           <div class="row g-4 align-items-stretch">
             <div v-if="selectedProduct" class="col-lg-4 d-flex">
               <div class="card shadow-sm p-4 bg-light h-100 w-100">
-                <img :src="productImageUrl(selectedProduct.imagen_url)" :alt="selectedProduct.nombre" class="product-preview-image rounded shadow mb-3" />
+                <img
+                  :src="productImageUrl(firstImageFrom(selectedProduct.imagen_url))"
+                  :alt="selectedProduct.nombre"
+                  class="product-preview-image rounded shadow mb-3"
+                />
                 <div class="small text-uppercase text-muted mb-2">{{ selectedProduct.categoria }}</div>
                 <h3 class="h3 mb-2">{{ selectedProduct.nombre }}</h3>
                 <p class="h4 fw-semibold text-success mb-3">${{ Number(selectedProduct.precio).toFixed(2) }} MXN</p>
@@ -113,6 +117,25 @@ import type { Product } from '@/stores/productsStore';
 const route = useRoute();
 const productsStore = useProductsStore();
 
+function firstImageFrom(imagenUrl: string | null | undefined): string | null {
+  const raw = (imagenUrl ?? '').trim();
+  if (!raw) return null;
+
+  if (raw.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (Array.isArray(parsed)) {
+        const first = parsed[0];
+        return first ? String(first).trim() : null;
+      }
+    } catch {
+      // Fallback a separadores
+    }
+  }
+
+  return raw.split(/[,\|;]+/g).map((s) => s.trim()).filter(Boolean)[0] ?? null;
+}
+
 const form = ref({
   name: '',
   email: '',
@@ -129,7 +152,20 @@ const selectedProduct = ref<Product | null>(null);
 const tallasOpciones = computed(() => {
   const p = selectedProduct.value;
   if (!p?.tallas_disponibles) return [];
-  return p.tallas_disponibles.split(',').map((s) => s.trim()).filter(Boolean);
+
+  const raw = p.tallas_disponibles.trim();
+  if (!raw) return [];
+
+  if (raw.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (Array.isArray(parsed)) return parsed.map((x) => String(x).trim()).filter(Boolean);
+    } catch {
+      // fallback legacy
+    }
+  }
+
+  return raw.split(/[,\|;]+/g).map((s) => s.trim()).filter(Boolean);
 });
 
 watch(

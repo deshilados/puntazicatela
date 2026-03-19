@@ -1,6 +1,6 @@
 <template>
   <Navbar />
-  <div class="min-vh-100 d-flex align-items-center justify-content-center p-3" style="margin-top: 4rem">
+  <div class="d-flex align-items-center justify-content-center p-5">
     <div class="card shadow-sm w-100" style="max-width: 400px">
       <div class="card-body p-4">
         <h1 class="h4 fw-bold mb-1 text-center">Administración</h1>
@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import Swal from 'sweetalert2';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Navbar from '@/components/Navbar.vue';
@@ -36,8 +37,33 @@ const password = ref('');
 
 async function submit() {
   adminAuth.error = null;
+  Swal.fire({
+    title: 'Verificando credenciales...',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
   const ok = await adminAuth.login(email.value, password.value);
-  if (ok) router.push('/panel');
+  Swal.close();
+  if (ok) {
+    await Swal.fire({
+      icon: 'success',
+      title: 'Acceso concedido',
+      text: 'Bienvenido al panel.',
+      timer: 1400,
+      showConfirmButton: false,
+    });
+    router.push('/panel');
+  } else {
+    await Swal.fire({
+      icon: 'error',
+      title: 'Acceso denegado',
+      text: adminAuth.error || 'No se pudo iniciar sesión.',
+    });
+  }
 }
 </script>
 

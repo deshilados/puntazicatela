@@ -1,11 +1,10 @@
 <template>
   <Navbar />
-  <div class="card shadow-sm mb-4">
+  <div class="card shadow-sm mb-4 pt-5">
     <div class="card-header bg-dark text-white">
       <h1 class="h5 mb-0">Textos y datos del sitio</h1>
     </div>
     <div class="card-body p-4">
-      <div v-if="flash" class="alert alert-success">{{ flash }}</div>
       <form @submit.prevent="submit">
         <ul class="nav nav-tabs mb-3" role="tablist">
           <li class="nav-item">
@@ -220,10 +219,10 @@ import { onMounted, reactive, ref } from 'vue';
 import Navbar from '@/components/Navbar.vue';
 import { useSiteContentStore } from '@/stores/siteContentStore';
 import { numberToWhatsAppUrl } from '@/stores/siteContentStore';
+import Swal from 'sweetalert2';
 
 const siteContent = useSiteContentStore();
 const tab = ref<'meta' | 'encabezado' | 'nosotros' | 'footer'>('meta');
-const flash = ref('');
 
 const form = reactive<Record<string, string>>({
   meta_site_name: '',
@@ -281,13 +280,37 @@ onMounted(async () => {
 });
 
 async function submit() {
+  Swal.fire({
+    title: 'Guardando contenido...',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
   let wa = form.footer_social_whatsapp;
   if (wa && !wa.startsWith('http')) {
     form.footer_social_whatsapp = numberToWhatsAppUrl(wa);
   }
-  await siteContent.setBulk({ ...form });
-  flash.value = 'Contenido guardado correctamente';
-  setTimeout(() => (flash.value = ''), 3000);
+  try {
+    await siteContent.setBulk({ ...form });
+    Swal.close();
+    await Swal.fire({
+      icon: 'success',
+      title: 'Listo',
+      text: 'Contenido guardado correctamente.',
+      timer: 1400,
+      showConfirmButton: false,
+    });
+  } catch (e) {
+    Swal.close();
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: (e as Error).message || 'No se pudo guardar el contenido.',
+    });
+  }
 }
 </script>
 

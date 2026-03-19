@@ -20,7 +20,7 @@
                 <button type="submit" class="btn btn-dark w-100">Entrar</button>
               </form>
               <p class="mt-3 mb-0 text-center small text-muted">
-                ¿No tienes cuenta? <router-link to="/register">Regístrate</router-link>
+                ¿No tienes cuenta?
               </p>
             </div>
           </div>
@@ -38,6 +38,7 @@ import { useRouter } from 'vue-router';
 import Navbar from '@/components/Navbar.vue';
 import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { supabase } from '@/utils/supabase';
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const email = ref('');
@@ -46,14 +47,37 @@ const error = ref('');
 
 async function submit() {
   error.value = '';
+  Swal.fire({
+    title: 'Iniciando sesión...',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
   const { data, error: err } = await supabase.from('users').select('id, nombre, email, rol').eq('email', email.value.trim().toLowerCase()).single();
   if (err || !data) {
+    Swal.close();
     error.value = 'Email o contraseña incorrectos.';
+    await Swal.fire({
+      icon: 'error',
+      title: 'No se pudo iniciar sesión',
+      text: error.value,
+    });
     return;
   }
   // En producción validar password con Edge Function o Supabase Auth
   sessionStorage.setItem('user', JSON.stringify(data));
-  router.push({ path: '/', query: { welcome: '1' } });
+  Swal.close();
+  await Swal.fire({
+    icon: 'success',
+    title: 'Bienvenido',
+    text: 'Sesión iniciada correctamente.',
+    timer: 1400,
+    showConfirmButton: false,
+  });
+  router.push({ path: '/' });
 }
 </script>
 

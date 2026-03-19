@@ -1,6 +1,6 @@
 <template>
   <Navbar />
-  <div class="categorias-page mt-5 pt-5" style="min-height: 60vh">
+  <div class="categorias-page pt-5" style="min-height: 60vh">
     <div class="container">
       <div class="row mb-2">
         <div class="col-12 text-center">
@@ -42,14 +42,19 @@
         </button>
       </div>
 
-      <div v-if="!hasCategories && searchTerm" class="alert alert-info text-center">
+      <div v-if="!productsStore.loading && !hasCategories && searchTerm" class="alert alert-info text-center">
         <p class="mb-0">No se encontraron productos que coincidan con "{{ searchTerm }}".</p>
       </div>
-      <div v-else-if="!hasCategories && !searchTerm" class="alert alert-warning text-center">
+      <div v-else-if="!productsStore.loading && !hasCategories && !searchTerm" class="alert alert-warning text-center">
         <p class="mb-0">No se encontraron categorías.</p>
       </div>
 
-      <template v-if="hasCategories">
+      <template v-if="productsStore.loading">
+        <div class="mb-5">
+          <SkeletonProductGrid :count="12" />
+        </div>
+      </template>
+      <template v-else-if="hasCategories">
         <template v-if="searchTerm">
           <div class="row g-4 mb-5">
             <div v-for="p in flatProducts" :key="p.id" class="col-md-6 col-lg-4">
@@ -88,6 +93,7 @@ import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { useRoute } from 'vue-router';
 import { useProductsStore } from '@/stores/productsStore';
 import ProductCard from '@/components/ProductCard.vue';
+import SkeletonProductGrid from '@/components/SkeletonProductGrid.vue';
 
 const route = useRoute();
 const productsStore = useProductsStore();

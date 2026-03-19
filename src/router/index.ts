@@ -4,7 +4,6 @@ import Categorias from '@/pages/Categorias.vue';
 import ProductoShow from '@/pages/ProductoShow.vue';
 import Ordenar from '@/pages/Ordenar.vue';
 import Login from '@/pages/Login.vue';
-import Register from '@/pages/Register.vue';
 import About from '@/pages/About.vue';
 import Contact from '@/pages/Contact.vue';
 
@@ -21,7 +20,6 @@ const routes = [
   { path: '/producto/:id', name: 'ProductoShow', component: ProductoShow },
   { path: '/ordenar', name: 'Ordenar', component: Ordenar },
   { path: '/login', name: 'Login', component: Login },
-  { path: '/register', name: 'Register', component: Register },
   { path: '/about', name: 'About', component: About },
   { path: '/contact', name: 'Contact', component: Contact },
 

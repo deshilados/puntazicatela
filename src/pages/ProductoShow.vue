@@ -1,7 +1,9 @@
 <template>
   <Navbar />
   <div class="pt-5" style="min-height: 70vh">
-    <div v-if="loading" class="container text-center py-5">Cargando...</div>
+    <div v-if="loading" class="container py-5">
+      <SkeletonProductDetail />
+    </div>
     <div v-else-if="!product" class="container text-center py-5">
       <p class="text-danger">Producto no encontrado.</p>
       <router-link to="/" class="btn btn-success">Ir al inicio</router-link>
@@ -21,7 +23,45 @@
       <div class="row g-5 mb-5">
         <div class="col-lg-6">
           <div class="rounded shadow overflow-hidden">
-            <img :src="productImageUrl(product.imagen_url)" :alt="product.nombre" class="w-100" style="height: 500px; object-fit: cover" />
+            <img
+              v-if="productImages.length"
+              :src="productImageUrl(activeImageUrl)"
+              :alt="product.nombre"
+              class="w-100"
+              style="height: 500px; object-fit: cover"
+            />
+            <img
+              v-else
+              :src="productImageUrl(product.imagen_url)"
+              :alt="product.nombre"
+              class="w-100"
+              style="height: 500px; object-fit: cover"
+            />
+          </div>
+
+          <div
+            v-if="productImages.length"
+            class="d-flex flex-wrap gap-2 mt-3"
+            role="list"
+            aria-label="Galería de imágenes del producto"
+          >
+            <button
+              v-for="(img, idx) in productImages"
+              :key="img + '-' + idx"
+              type="button"
+              class="btn btn-sm p-0"
+              :class="idx === activeImageIndex ? 'border border-3 border-success' : 'border border-secondary'"
+              @click="activeImageIndex = idx"
+              :aria-label="'Ver imagen ' + (idx + 1)"
+              :aria-pressed="idx === activeImageIndex"
+            >
+              <img
+                :src="productImageUrl(img)"
+                :alt="'Imagen ' + (idx + 1) + ' de ' + product.nombre"
+                class="img-thumbnail"
+                style="height: 84px; width: 140px; object-fit: cover; border-radius: 0.5rem;"
+              />
+            </button>
           </div>
         </div>
         <div class="col-lg-6">
@@ -60,7 +100,7 @@
         <div class="row g-4">
           <div v-for="r in related" :key="r.id" class="col-md-6 col-lg-3">
             <div class="card shadow-sm h-100" style="cursor: pointer" @click="$router.push('/producto/' + r.id)">
-              <img :src="productImageUrl(r.imagen_url)" :alt="r.nombre" class="card-img-top" style="height: 320px; object-fit: cover" />
+              <img :src="productImageUrl(firstImageFrom(r.imagen_url))" :alt="r.nombre" class="card-img-top" style="height: 320px; object-fit: cover" />
               <div class="card-body">
                 <span class="small text-uppercase text-muted d-block mb-2">{{ r.categoria }}</span>
                 <h3 class="h5 mb-2">{{ r.nombre }}</h3>
@@ -77,13 +117,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import Navbar from '@/components/Navbar.vue';
 import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { useProductsStore } from '@/stores/productsStore';
 import type { Product } from '@/stores/productsStore';
 import { productImageUrl } from '@/utils/productImageUrl';
+import SkeletonProductDetail from '@/components/SkeletonProductDetail.vue';
 
 const route = useRoute();
 const productsStore = useProductsStore();
@@ -91,9 +132,64 @@ const productsStore = useProductsStore();
 const product = ref<Product | null>(null);
 const loading = ref(true);
 
+function parseImages(imagenUrl: string | null | undefined): string[] {
+  const raw = (imagenUrl ?? '').trim();
+  if (!raw) return [];
+
+  // Soporta JSON: '["a.jpg","b.jpg"]'
+  if (raw.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (Array.isArray(parsed)) return parsed.map((x) => String(x).trim()).filter(Boolean);
+    } catch {
+      // Fallback a separadores
+    }
+  }
+
+  // Soporta lista separada por comas/|/;
+  return raw
+    .split(/[,\|;]+/g)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+const productImages = computed(() => parseImages(product.value?.imagen_url));
+const activeImageIndex = ref(0);
+const activeImageUrl = computed(() => productImages.value[activeImageIndex.value] ?? '');
+
+function firstImageFrom(imagenUrl: string | null | undefined): string | null {
+  return parseImages(imagenUrl)[0] ?? null;
+}
+
+function parseTallas(tallasValue: string | null | undefined): string[] {
+  const raw = (tallasValue ?? '').trim();
+  if (!raw) return [];
+
+  if (raw.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (Array.isArray(parsed)) return parsed.map((x) => String(x).trim()).filter(Boolean);
+    } catch {
+      // fallback legacy
+    }
+  }
+
+  // Legacy: coma/|/;
+  return raw
+    .split(/[,\|;]+/g)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+watch(
+  () => product.value?.id,
+  () => {
+    activeImageIndex.value = 0;
+  },
+);
+
 const tallas = computed(() => {
-  const t = product.value?.tallas_disponibles ?? '';
-  return t.split(',').map((s) => s.trim()).filter(Boolean);
+  return parseTallas(product.value?.tallas_disponibles);
 });
 
 const related = ref<Product[]>([]);

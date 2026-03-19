@@ -19,6 +19,11 @@
           <ProductCard :product="p" />
         </div>
       </div>
+      <div v-else-if="productsStore.loading" class="row g-4">
+        <div class="col-12">
+          <SkeletonProductGrid :count="6" />
+        </div>
+      </div>
       <div v-else class="col-12">
         <div class="alert alert-info text-center">
           <p class="mb-0">{{ collection.no_products || 'No hay productos disponibles en este momento.' }}</p>
@@ -31,6 +36,7 @@
 <script setup lang="ts">
 import { useProductsStore } from '@/stores/productsStore';
 import ProductCard from '@/components/ProductCard.vue';
+import SkeletonProductGrid from '@/components/SkeletonProductGrid.vue';
 
 type HomeCollection = {
   title?: string;

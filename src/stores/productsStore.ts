@@ -1,6 +1,67 @@
 import { defineStore } from 'pinia';
 import { supabase } from '@/utils/supabase';
 
+function normalizeImageNameEntry(value: string): string {
+  const raw = value.trim();
+  if (!raw) return '';
+
+  // Si llega URL completa o ruta, nos quedamos solo con el nombre de archivo.
+  const withoutQuery = raw.split('?')[0].split('#')[0];
+  const parts = withoutQuery.split('/').filter(Boolean);
+  return parts.length ? parts[parts.length - 1].trim() : raw;
+}
+
+function normalizeImagenUrlValue(value: string | null | undefined): string {
+  const raw = (value ?? '').trim();
+  if (!raw) return '';
+
+  // Soporta JSON array y lo normaliza a JSON array de nombres.
+  if (raw.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (Array.isArray(parsed)) {
+        const normalized = parsed
+          .map((x) => normalizeImageNameEntry(String(x)))
+          .filter(Boolean)
+        return normalized.length ? JSON.stringify(normalized) : '';
+      }
+    } catch {
+      // fallback a separadores
+    }
+  }
+
+  const normalized = raw
+    .split(/[,\|;]+/g)
+    .map((s) => normalizeImageNameEntry(s))
+    .filter(Boolean);
+
+  return normalized.length ? JSON.stringify(normalized) : '';
+}
+
+function normalizeTallasValue(value: string | null | undefined): string {
+  const raw = (value ?? '').trim();
+  if (!raw) return '';
+
+  if (raw.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (Array.isArray(parsed)) {
+        const normalized = parsed.map((x) => String(x).trim()).filter(Boolean);
+        return normalized.length ? JSON.stringify(normalized) : '';
+      }
+    } catch {
+      // fallback a separadores
+    }
+  }
+
+  const normalized = raw
+    .split(/[,\|;]+/g)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  return normalized.length ? JSON.stringify(normalized) : '';
+}
+
 export interface Product {
   id: number;
   nombre: string;
@@ -142,10 +203,10 @@ export const useProductsStore = defineStore('products', {
           categoria: payload.categoria,
           precio: payload.precio,
           stock: payload.stock ?? 0,
-          imagen_url: payload.imagen_url ?? '',
+          imagen_url: normalizeImagenUrlValue(payload.imagen_url),
           activo: payload.activo ?? true,
           portada: payload.portada ?? false,
-          tallas_disponibles: payload.tallas_disponibles ?? ''
+          tallas_disponibles: normalizeTallasValue(payload.tallas_disponibles)
         })
         .select('id')
         .single();
@@ -163,10 +224,10 @@ export const useProductsStore = defineStore('products', {
           categoria: payload.categoria,
           precio: payload.precio,
           stock: payload.stock ?? 0,
-          imagen_url: payload.imagen_url ?? '',
+          imagen_url: normalizeImagenUrlValue(payload.imagen_url),
           activo: payload.activo ?? true,
           portada: payload.portada ?? false,
-          tallas_disponibles: payload.tallas_disponibles ?? ''
+          tallas_disponibles: normalizeTallasValue(payload.tallas_disponibles)
         })
         .eq('id', id);
       if (error) throw new Error(error.message);

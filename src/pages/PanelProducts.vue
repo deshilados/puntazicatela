@@ -1,14 +1,22 @@
 <template>
   <Navbar />
   <div>
-    <h1 class="h4 fw-bold text-center">Productos</h1>
-    <div v-if="flash" class="alert" :class="flashType">{{ flash }}</div>
+    <h1 class="h4 fw-bold text-center pt-5">Productos</h1>
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
       <span class="text-muted small">{{ productsStore.all.length }} producto(s)</span>
       <router-link to="/panel/crear" class="btn btn-dark btn-sm"><i class="bi bi-plus-lg"></i> Nuevo producto</router-link>
     </div>
     <div class="card shadow-sm mb-4">
-      <div v-if="!productsStore.all.length" class="card-body text-center py-5 text-muted">
+      <div v-if="productsStore.loading" class="card-body">
+        <div class="placeholder-glow">
+          <div class="placeholder col-12 mb-2" style="height: 18px"></div>
+          <div class="placeholder col-12 mb-2" style="height: 18px"></div>
+          <div class="placeholder col-12 mb-2" style="height: 18px"></div>
+          <div class="placeholder col-12 mb-2" style="height: 18px"></div>
+          <div class="placeholder col-12 mb-2" style="height: 18px"></div>
+        </div>
+      </div>
+      <div v-else-if="!productsStore.all.length" class="card-body text-center py-5 text-muted">
         <p class="fw-bold mb-2">No hay productos</p>
         <p class="mb-3">Crea el primero desde el botón «Nuevo producto».</p>
         <router-link to="/panel/crear" class="btn btn-dark">Nuevo producto</router-link>
@@ -35,7 +43,13 @@
               </td>
               <td>
                 <div class="d-flex align-items-center gap-2">
-                  <img :src="productImageUrl(p.imagen_url)" alt="" class="rounded object-fit-cover" width="48" height="48" />
+                  <img
+                    :src="productImageUrl(firstImageFrom(p.imagen_url))"
+                    alt=""
+                    class="rounded object-fit-cover"
+                    width="48"
+                    height="48"
+                  />
                   <span class="fw-medium">{{ p.nombre }}</span>
                 </div>
               </td>
@@ -61,27 +75,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import Swal from 'sweetalert2';
+import { onMounted } from 'vue';
 import Navbar from '@/components/Navbar.vue';
-import { useRouter, useRoute } from 'vue-router';
 import { useProductsStore } from '@/stores/productsStore';
 import { productImageUrl } from '@/utils/productImageUrl';
 
-const router = useRouter();
-const route = useRoute();
 const productsStore = useProductsStore();
-
-const flash = ref('');
-const flashType = ref('alert-success');
 
 onMounted(async () => {
   await productsStore.fetchAll();
-  const m = route.query.msg as string;
-  const t = route.query.type as string;
-  if (m) {
-    flash.value = m;
-    flashType.value = t === 'danger' ? 'alert-danger' : 'alert-success';
-  }
 });
 
 function isFirst(p: { id: number }) {
@@ -96,29 +99,102 @@ function isLast(p: { id: number }) {
   return i < 0 || i >= list.length - 1;
 }
 
+function firstImageFrom(imagenUrl: string | null | undefined): string | null {
+  const raw = (imagenUrl ?? '').trim();
+  if (!raw) return null;
+
+  if (raw.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (Array.isArray(parsed)) {
+        const first = parsed[0];
+        return first ? String(first).trim() : null;
+      }
+    } catch {
+      // Fallback a separadores
+    }
+  }
+
+  return raw.split(/[,\|;]+/g).map((s) => s.trim()).filter(Boolean)[0] ?? null;
+}
+
 async function subir(id: number) {
+  Swal.fire({
+    title: 'Actualizando orden...',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
   const ok = await productsStore.subirOrden(id);
   await productsStore.fetchAll();
-  if (ok) flash.value = 'Orden actualizado';
-  else flash.value = 'No se pudo subir';
+  Swal.close();
+  await Swal.fire({
+    icon: ok ? 'success' : 'error',
+    title: ok ? 'Listo' : 'No se pudo',
+    text: ok ? 'Orden actualizado.' : 'No se pudo subir este producto.',
+  });
 }
 
 async function bajar(id: number) {
+  Swal.fire({
+    title: 'Actualizando orden...',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
   const ok = await productsStore.bajarOrden(id);
   await productsStore.fetchAll();
-  if (ok) flash.value = 'Orden actualizado';
-  else flash.value = 'No se pudo bajar';
+  Swal.close();
+  await Swal.fire({
+    icon: ok ? 'success' : 'error',
+    title: ok ? 'Listo' : 'No se pudo',
+    text: ok ? 'Orden actualizado.' : 'No se pudo bajar este producto.',
+  });
 }
 
 async function eliminar(p: { id: number; nombre: string }) {
-  if (!confirm('¿Eliminar definitivamente "' + p.nombre + '"?')) return;
   try {
+    const confirm = await Swal.fire({
+      icon: 'warning',
+      title: '¿Eliminar producto?',
+      text: 'Vas a eliminar definitivamente "' + p.nombre + '".',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+    if (!confirm.isConfirmed) return;
+
+    Swal.fire({
+      title: 'Eliminando...',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     await productsStore.deletePermanent(p.id);
-    router.replace({ path: '/panel', query: { msg: 'Producto eliminado', type: 'success' } });
     await productsStore.fetchAll();
+    Swal.close();
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Eliminado',
+      text: 'Producto eliminado correctamente.',
+    });
   } catch (e) {
-    flash.value = (e as Error).message;
-    flashType.value = 'alert-danger';
+    Swal.close();
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: (e as Error).message || 'No se pudo eliminar el producto.',
+    });
   }
 }
 </script>

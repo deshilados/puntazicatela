@@ -1,6 +1,6 @@
 <template>
   <Navbar />
-  <div class="card shadow-sm mx-auto mb-4" style="max-width: 720px;">
+  <div class="card shadow-sm mx-auto pt-5" style="max-width: 720px; margin-top: 2rem;">
     <div class="card-body p-4">
       <h1 class="h4 fw-bold mb-3 text-center">{{ isEdit ? 'Editar producto' : 'Nuevo producto' }}</h1>
       <div v-if="error" class="alert alert-danger">{{ error }}</div>
@@ -31,14 +31,62 @@
           </div>
         </div>
         <div class="mb-3">
-          <label class="form-label">Imagen del producto</label>
-          <p class="small text-muted">Ruta de la imagen (ej: productos/1.jpg o URL). Los archivos los subes tú al servidor.</p>
-          <input v-model="form.imagen_url" type="text" class="form-control" placeholder="productos/1.jpg" />
-          <img v-if="isEdit && form.imagen_url" :src="productImageUrl(form.imagen_url)" alt="Vista previa" class="img-thumbnail mt-2" style="max-height: 120px" />
+          <label class="form-label">Imágenes del producto</label>
+          <p class="small text-muted">
+            Agrega cada imagen en su propio campo (solo nombre de archivo, ej: <code>1_1.jpeg</code>).
+            Se guarda como JSON y se resuelve desde <code>images/productos/</code>.
+          </p>
+          <div v-for="(_, idx) in imageNames" :key="'img-' + idx" class="input-group mb-2">
+            <span class="input-group-text">#{{ idx + 1 }}</span>
+            <input
+              v-model="imageNames[idx]"
+              type="text"
+              class="form-control"
+              placeholder="1_1.jpeg"
+            />
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              :disabled="imageNames.length === 1"
+              @click="removeImageField(idx)"
+            >
+              Quitar
+            </button>
+          </div>
+          <button type="button" class="btn btn-outline-secondary btn-sm" @click="addImageField">
+            <i class="bi bi-plus-lg me-1"></i>Agregar imagen
+          </button>
+
+          <img
+            v-if="firstImageName"
+            :src="productImageUrl(firstImageName)"
+            alt="Vista previa"
+            class="img-thumbnail mt-2 d-block"
+            style="max-height: 120px"
+          />
         </div>
         <div class="mb-3">
-          <label class="form-label">Tallas disponibles (separadas por coma)</label>
-          <input v-model="form.tallas_disponibles" type="text" class="form-control" placeholder="S, M, L" />
+          <label class="form-label">Tallas disponibles</label>
+          <p class="small text-muted mb-2">
+            Agrega cada talla en su propio campo. Se guarda como JSON para que en la vista se lea correctamente.
+          </p>
+
+          <div v-for="(_, idx) in tallasNames" :key="'talla-' + idx" class="input-group mb-2">
+            <span class="input-group-text">#{{ idx + 1 }}</span>
+            <input v-model="tallasNames[idx]" type="text" class="form-control" placeholder="Ej: S" />
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              :disabled="tallasNames.length === 1"
+              @click="removeTallaField(idx)"
+            >
+              Quitar
+            </button>
+          </div>
+
+          <button type="button" class="btn btn-outline-secondary btn-sm" @click="addTallaField">
+            <i class="bi bi-plus-lg me-1"></i>Agregar talla
+          </button>
         </div>
         <div class="mb-4">
           <div class="form-check form-check-inline">
@@ -65,6 +113,7 @@ import { useRoute, useRouter } from 'vue-router';
 import Navbar from '@/components/Navbar.vue';
 import { useProductsStore } from '@/stores/productsStore';
 import { productImageUrl } from '@/utils/productImageUrl';
+import Swal from 'sweetalert2';
 
 const route = useRoute();
 const router = useRouter();
@@ -88,6 +137,84 @@ const form = reactive({
   tallas_disponibles: ''
 });
 
+const imageNames = ref<string[]>(['']);
+const tallasNames = ref<string[]>(['']);
+
+function parseImageList(imagenUrl: string | null | undefined): string[] {
+  const raw = (imagenUrl ?? '').trim();
+  if (!raw) return [];
+
+  if (raw.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (Array.isArray(parsed)) {
+        return parsed.map((x) => String(x).trim()).filter(Boolean);
+      }
+    } catch {
+      // Fallback a separadores
+    }
+  }
+
+  return raw.split(/[,\|;]+/g).map((s) => s.trim()).filter(Boolean);
+}
+
+function normalizeImageNameEntry(value: string): string {
+  const raw = value.trim();
+  if (!raw) return '';
+  const withoutQuery = raw.split('?')[0].split('#')[0];
+  const parts = withoutQuery.split('/').filter(Boolean);
+  return parts.length ? parts[parts.length - 1].trim() : raw;
+}
+
+const firstImageName = computed(() => {
+  const first = imageNames.value.map((n) => n.trim()).filter(Boolean)[0];
+  return first ? normalizeImageNameEntry(first) : null;
+});
+
+function addImageField() {
+  imageNames.value.push('');
+}
+
+function removeImageField(idx: number) {
+  if (imageNames.value.length === 1) return;
+  imageNames.value.splice(idx, 1);
+}
+
+function normalizeTallaEntry(value: string): string {
+  const raw = value.trim();
+  return raw;
+}
+
+function parseTallasList(tallasValue: string | null | undefined): string[] {
+  const raw = (tallasValue ?? '').trim();
+  if (!raw) return [];
+
+  if (raw.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (Array.isArray(parsed)) {
+        return parsed.map((x) => String(x).trim()).filter(Boolean);
+      }
+    } catch {
+      // fallback a separadores
+    }
+  }
+
+  return raw
+    .split(/[,\|;]+/g)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function addTallaField() {
+  tallasNames.value.push('');
+}
+
+function removeTallaField(idx: number) {
+  if (tallasNames.value.length === 1) return;
+  tallasNames.value.splice(idx, 1);
+}
+
 onMounted(async () => {
   categories.value = await productsStore.getCategoriesAll();
   if (isEdit.value) {
@@ -99,9 +226,12 @@ onMounted(async () => {
       form.precio = p.precio;
       form.stock = p.stock;
       form.imagen_url = p.imagen_url ?? '';
+      imageNames.value = parseImageList(form.imagen_url);
+      if (!imageNames.value.length) imageNames.value = [''];
       form.activo = p.activo;
       form.portada = p.portada;
-      form.tallas_disponibles = p.tallas_disponibles ?? '';
+      tallasNames.value = parseTallasList(p.tallas_disponibles ?? '');
+      if (!tallasNames.value.length) tallasNames.value = [''];
     }
   }
 });
@@ -116,16 +246,56 @@ async function submit() {
     error.value = 'El precio debe ser mayor que 0.';
     return;
   }
+
+  const normalizedImages = imageNames.value
+    .map((name) => normalizeImageNameEntry(name))
+    .filter(Boolean);
+
+  form.imagen_url = normalizedImages.length ? JSON.stringify(normalizedImages) : '';
+
+  const normalizedTallas = tallasNames.value
+    .map((t) => normalizeTallaEntry(t))
+    .filter(Boolean);
+
+  form.tallas_disponibles = normalizedTallas.length ? JSON.stringify(normalizedTallas) : '';
+
   try {
+    Swal.fire({
+      title: isEdit.value ? 'Guardando cambios...' : 'Creando producto...',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     if (isEdit.value) {
       await productsStore.update(id.value, { ...form });
-      router.push({ path: '/panel', query: { msg: 'Producto actualizado', type: 'success' } });
+      Swal.close();
+      await Swal.fire({
+        icon: 'success',
+        title: 'Listo',
+        text: 'Producto actualizado correctamente.',
+      });
+      router.push({ path: '/panel' });
     } else {
       await productsStore.create({ ...form });
-      router.push({ path: '/panel', query: { msg: 'Producto creado', type: 'success' } });
+      Swal.close();
+      await Swal.fire({
+        icon: 'success',
+        title: 'Listo',
+        text: 'Producto creado correctamente.',
+      });
+      router.push({ path: '/panel' });
     }
   } catch (e) {
+    Swal.close();
     error.value = (e as Error).message;
+    void Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.value || 'No se pudo guardar el producto.',
+    });
   }
 }
 </script>
