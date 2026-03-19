@@ -1,5 +1,6 @@
 <template>
-  <div class="card shadow-sm mb-4" style="margin-top: 6rem">
+  <Navbar />
+  <div class="card shadow-sm mb-4">
     <div class="card-header bg-dark text-white">
       <h1 class="h5 mb-0">Textos y datos del sitio</h1>
     </div>
@@ -207,7 +208,7 @@
 
         <div class="d-flex gap-2 mt-3">
           <button type="submit" class="btn btn-success">Guardar cambios</button>
-          <router-link to="/admin" class="btn btn-outline-secondary">Volver a productos</router-link>
+          <router-link to="/panel" class="btn btn-outline-secondary">Volver a productos</router-link>
         </div>
       </form>
     </div>
@@ -215,7 +216,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
+import Navbar from '@/components/Navbar.vue';
 import { useSiteContentStore } from '@/stores/siteContentStore';
 import { numberToWhatsAppUrl } from '@/stores/siteContentStore';
 
@@ -288,3 +290,4 @@ async function submit() {
   setTimeout(() => (flash.value = ''), 3000);
 }
 </script>
+

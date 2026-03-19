@@ -1,6 +1,6 @@
-# Guía para montar y ver el proyecto (Textil PXM en Vue + Supabase)
+# Guía para montar y ver el proyecto (Deshilados PXM en Vue + Supabase)
 
-Este proyecto es la migración del sistema PHP MVC (textilpxm) a **Vue 3 + Vite + TypeScript**, con base de datos en **Supabase**. Las imágenes se gestionan solo por **ruta en la tabla**; los archivos los subes tú al servidor o a un bucket.
+Este proyecto es la migración del sistema PHP MVC (Deshilados Pxm) a **Vue 3 + Vite + TypeScript**, con base de datos en **Supabase**. Las imágenes se gestionan solo por **ruta en la tabla**; los archivos los subes tú al servidor o a un bucket.
 
 ---
 
@@ -124,7 +124,7 @@ Se abrirá el navegador en `http://localhost:5173` (o el puerto que indique Vite
 
 **Usuario admin por defecto** (tras ejecutar `schema.sql`):
 
-- Email: `admin@textilpxm.com`
+- Email: `admin@deshiladospxm.com`
 - Contraseña: la que hayas definido en el hash del `schema.sql` (en el script de ejemplo se usa un hash de ejemplo; en producción debes usar Supabase Auth o una Edge Function que valide la contraseña).
 
 **Nota:** El login admin actual solo comprueba que el email exista en `users` y tenga `rol = 'admin'`. La validación de contraseña en producción debe hacerse con Supabase Auth o una Edge Function que consulte la tabla `users`.
@@ -143,7 +143,7 @@ Asegúrate de que las variables **VITE_SUPABASE_URL** y **VITE_SUPABASE_KEY** es
 
 ---
 
-## 7. Migrar datos desde MySQL (textilpxm)
+## 7. Migrar datos desde MySQL (Deshilados Pxm)
 
 Si ya tienes datos en la base MySQL del PHP:
 
@@ -155,7 +155,7 @@ Si ya tienes datos en la base MySQL del PHP:
 
 ## 8. Resumen de equivalencias PHP → Vue
 
-| PHP (textilpxm)        | Vue (este proyecto)                    |
+| PHP (Deshilados Pxm)   | Vue (este proyecto)                    |
 |------------------------|----------------------------------------|
 | `HomeController::index`| `HomeTextil.vue`                       |
 | `HomeController::categorias` | `Categorias.vue`               |

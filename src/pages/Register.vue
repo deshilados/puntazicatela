@@ -1,5 +1,6 @@
 <template>
-  <section class="py-5" style="margin-top: 6rem">
+  <Navbar />
+  <section class="py-5">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-md-5">
@@ -31,11 +32,15 @@
       </div>
     </div>
   </section>
+
+  <ContactoFooter />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import Navbar from '@/components/Navbar.vue';
+import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { supabase } from '@/utils/supabase';
 
 const router = useRouter();
@@ -64,3 +69,4 @@ async function submit() {
   router.push({ path: '/login', query: { registered: '1' } });
 }
 </script>
+

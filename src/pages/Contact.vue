@@ -1,5 +1,6 @@
 <template>
-  <section class="py-5" style="margin-top: 6rem">
+  <Navbar />
+  <section class="py-5">
     <div class="container">
       <h1 class="h3 fw-bold mb-4">Contacto</h1>
       <p class="text-muted mb-4">
@@ -8,4 +9,12 @@
       <router-link to="/#contacto" class="btn btn-dark">Ver datos de contacto</router-link>
     </div>
   </section>
+
+  <ContactoFooter />
 </template>
+
+<script setup lang="ts">
+import Navbar from '@/components/Navbar.vue';
+import ContactoFooter from '@/components/sections/ContactoFooter.vue';
+</script>
+

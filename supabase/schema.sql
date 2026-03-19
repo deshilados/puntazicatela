@@ -1,4 +1,4 @@
--- Esquema Supabase (PostgreSQL) equivalente al MySQL de textilpxm
+-- Esquema Supabase (PostgreSQL) equivalente al MySQL del proyecto Deshilados Pxm
 -- Ejecutar en SQL Editor del panel de Supabase
 
 -- Tabla de usuarios
@@ -64,7 +64,7 @@ CREATE POLICY "Allow all site_content" ON public.site_content FOR ALL USING (tru
 INSERT INTO public.users (nombre, email, password, rol)
 VALUES (
   'Administrador',
-  'admin@textilpxm.com',
+  'deshiladospxm@outlook.com',
   '$2y$10$RFvz.hTVHPtBWtEJNvHVouKZqyKVG0a8q9nMrapPVqi6xvlL5AR.q',
   'admin'
 )
@@ -72,7 +72,7 @@ ON CONFLICT (email) DO NOTHING;
 
 -- Valores por defecto de site_content (mismos que schema MySQL)
 INSERT INTO public.site_content ("key", value) VALUES
-('navbar_brand', 'Textil PXM'),
+('navbar_brand', 'Deshilados PXM'),
 ('navbar_logo', 'logo-navbar.png'),
 ('footer_brand', 'PRENDAS TÍPICAS OAXACA'),
 ('footer_description', 'Prendas artesanales de la costa chica de Oaxaca.'),
@@ -85,21 +85,15 @@ INSERT INTO public.site_content ("key", value) VALUES
 ('footer_schedule_days', 'Fines de semana'),
 ('footer_schedule_hours', '10:00 AM - 7:00 PM'),
 ('footer_social_whatsapp', 'https://wa.me/529541817823?text=Hola,%20me%20interesa%20información%20sobre%20sus%20productos'),
-('footer_copyright_text', 'Oaxaca Textiles. Todos los derechos reservados.'),
+('footer_copyright_text', 'Deshilados PXM. Todos los derechos reservados.'),
 ('footer_copyright_made_with', 'Hecho con amor en Puerto Escondido, Oaxaca'),
-('meta_site_name', 'Oaxaca Textiles'),
+('meta_site_name', 'Deshilados PXM'),
 ('meta_site_icon', 'icon.png'),
 ('meta_site_description', 'Descubre la belleza de la ropa típica oaxaqueña.'),
-('home_hero_title', 'Tradición Textil Oaxaqueña'),
+('home_hero_title', 'Tradición de los Deshilados Oaxaqueños'),
 ('home_hero_description', 'Descubre prendas únicas tejidas a mano por artesanas de la costa chica de Oaxaca.'),
 ('home_hero_image', 'banner.jpg'),
 ('home_collection_title', 'Prendas Artesanales'),
 ('home_about_title', 'Raíces que Visten'),
 ('home_about_image', 'about.jpg')
 ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
-
--- Si ya tenías datos con rutas "site/...", actualiza a las rutas que usa el repo (imágenes en public/images/):
--- UPDATE public.site_content SET value = 'logo-navbar.png' WHERE key = 'navbar_logo';
--- UPDATE public.site_content SET value = 'icon.png' WHERE key = 'meta_site_icon';
--- UPDATE public.site_content SET value = 'banner.jpg' WHERE key = 'home_hero_image';
--- UPDATE public.site_content SET value = 'about.jpg' WHERE key = 'home_about_image';

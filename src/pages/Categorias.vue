@@ -1,4 +1,5 @@
 <template>
+  <Navbar />
   <div class="categorias-page mt-5 pt-5" style="min-height: 60vh">
     <div class="container">
       <div class="row mb-2">
@@ -76,13 +77,17 @@
       </template>
     </div>
   </div>
+
+  <ContactoFooter />
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import Navbar from '@/components/Navbar.vue';
+import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { useRoute } from 'vue-router';
 import { useProductsStore } from '@/stores/productsStore';
-import ProductCard from '@/components/textil/ProductCard.vue';
+import ProductCard from '@/components/ProductCard.vue';
 
 const route = useRoute();
 const productsStore = useProductsStore();
@@ -134,3 +139,4 @@ onMounted(async () => {
   border-bottom-color: #4a6741 !important;
 }
 </style>
+

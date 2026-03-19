@@ -1,19 +1,22 @@
 <template>
-  <div class="mt-5 pt-5" style="min-height: 70vh">
+  <Navbar />
+  <div class="pt-5" style="min-height: 70vh">
     <div v-if="loading" class="container text-center py-5">Cargando...</div>
     <div v-else-if="!product" class="container text-center py-5">
       <p class="text-danger">Producto no encontrado.</p>
       <router-link to="/" class="btn btn-success">Ir al inicio</router-link>
     </div>
     <div v-else class="container">
-      <nav aria-label="breadcrumb" class="mb-4">
+      <div aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb mb-0">
           <li class="breadcrumb-item"><router-link to="/" class="text-success text-decoration-none">Inicio</router-link></li>
           <li class="breadcrumb-item"><router-link to="/categorias" class="text-success text-decoration-none">Categorías</router-link></li>
-          <li class="breadcrumb-item"><router-link :to="'/categorias?cat=' + encodeURIComponent(product.categoria)" class="text-success text-decoration-none">{{ product.categoria }}</router-link></li>
+          <li class="breadcrumb-item">
+            <router-link :to="'/categorias?cat=' + encodeURIComponent(product.categoria)" class="text-success text-decoration-none">{{ product.categoria }}</router-link>
+          </li>
           <li class="breadcrumb-item active">{{ product.nombre }}</li>
         </ol>
-      </nav>
+      </div>
 
       <div class="row g-5 mb-5">
         <div class="col-lg-6">
@@ -69,11 +72,15 @@
       </div>
     </div>
   </div>
+
+  <ContactoFooter />
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import Navbar from '@/components/Navbar.vue';
+import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { useProductsStore } from '@/stores/productsStore';
 import type { Product } from '@/stores/productsStore';
 import { productImageUrl } from '@/utils/productImageUrl';
@@ -114,3 +121,4 @@ onMounted(async () => {
   loading.value = false;
 });
 </script>
+

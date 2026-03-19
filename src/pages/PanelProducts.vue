@@ -1,16 +1,17 @@
 <template>
+  <Navbar />
   <div>
-    <h1 class="h4 fw-bold text-center" style="margin-top: 6rem">Productos</h1>
+    <h1 class="h4 fw-bold text-center">Productos</h1>
     <div v-if="flash" class="alert" :class="flashType">{{ flash }}</div>
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
       <span class="text-muted small">{{ productsStore.all.length }} producto(s)</span>
-      <router-link to="/admin/crear" class="btn btn-dark btn-sm"><i class="bi bi-plus-lg"></i> Nuevo producto</router-link>
+      <router-link to="/panel/crear" class="btn btn-dark btn-sm"><i class="bi bi-plus-lg"></i> Nuevo producto</router-link>
     </div>
     <div class="card shadow-sm mb-4">
       <div v-if="!productsStore.all.length" class="card-body text-center py-5 text-muted">
         <p class="fw-bold mb-2">No hay productos</p>
         <p class="mb-3">Crea el primero desde el botón «Nuevo producto».</p>
-        <router-link to="/admin/crear" class="btn btn-dark">Nuevo producto</router-link>
+        <router-link to="/panel/crear" class="btn btn-dark">Nuevo producto</router-link>
       </div>
       <div v-else class="table-responsive">
         <table class="table table-hover align-middle mb-0">
@@ -48,7 +49,7 @@
                 <span class="badge" :class="p.activo ? 'bg-success' : 'bg-danger'">{{ p.activo ? 'Activo' : 'Inactivo' }}</span>
               </td>
               <td class="text-end">
-                <router-link :to="'/admin/editar/' + p.id" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil-square"></i></router-link>
+                <router-link :to="'/panel/editar/' + p.id" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil-square"></i></router-link>
                 <button type="button" class="btn btn-sm btn-outline-danger" @click="eliminar(p)"><i class="bi bi-trash"></i></button>
               </td>
             </tr>
@@ -60,7 +61,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
+import Navbar from '@/components/Navbar.vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProductsStore } from '@/stores/productsStore';
 import { productImageUrl } from '@/utils/productImageUrl';
@@ -112,7 +114,7 @@ async function eliminar(p: { id: number; nombre: string }) {
   if (!confirm('¿Eliminar definitivamente "' + p.nombre + '"?')) return;
   try {
     await productsStore.deletePermanent(p.id);
-    router.replace({ path: '/admin', query: { msg: 'Producto eliminado', type: 'success' } });
+    router.replace({ path: '/panel', query: { msg: 'Producto eliminado', type: 'success' } });
     await productsStore.fetchAll();
   } catch (e) {
     flash.value = (e as Error).message;
@@ -120,3 +122,4 @@ async function eliminar(p: { id: number; nombre: string }) {
   }
 }
 </script>
+

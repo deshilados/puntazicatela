@@ -11,9 +11,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico'],
       manifest: {
-        name: 'Oaxaca Textiles',
-        short_name: 'Textiles',
-        description: 'Catálogo de prendas típicas de Oaxaca - Punta Zicatela',
+        name: 'Deshilados PXM',
+        short_name: 'Deshilados',
+        description: 'Catálogo de prendas típicas de Oaxaca - Punta Zicatela (Deshilados PXM)',
         theme_color: '#4a6741',
         background_color: '#ffffff',
         display: 'standalone',

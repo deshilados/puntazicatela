@@ -23,3 +23,4 @@ function go() {
   router.push('/producto/' + props.product.id);
 }
 </script>
+

@@ -1,5 +1,6 @@
 <template>
-  <div class="card shadow-sm mx-auto mb-4" style="max-width: 720px; margin-top: 6rem">
+  <Navbar />
+  <div class="card shadow-sm mx-auto mb-4" style="max-width: 720px;">
     <div class="card-body p-4">
       <h1 class="h4 fw-bold mb-3 text-center">{{ isEdit ? 'Editar producto' : 'Nuevo producto' }}</h1>
       <div v-if="error" class="alert alert-danger">{{ error }}</div>
@@ -51,7 +52,7 @@
         </div>
         <div class="text-center">
           <button type="submit" class="btn btn-dark me-2">{{ isEdit ? 'Guardar cambios' : 'Crear producto' }}</button>
-          <router-link to="/admin" class="btn btn-outline-secondary">Cancelar</router-link>
+          <router-link to="/panel" class="btn btn-outline-secondary">Cancelar</router-link>
         </div>
       </form>
     </div>
@@ -59,8 +60,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import Navbar from '@/components/Navbar.vue';
 import { useProductsStore } from '@/stores/productsStore';
 import { productImageUrl } from '@/utils/productImageUrl';
 
@@ -117,13 +119,14 @@ async function submit() {
   try {
     if (isEdit.value) {
       await productsStore.update(id.value, { ...form });
-      router.push({ path: '/admin', query: { msg: 'Producto actualizado', type: 'success' } });
+      router.push({ path: '/panel', query: { msg: 'Producto actualizado', type: 'success' } });
     } else {
       await productsStore.create({ ...form });
-      router.push({ path: '/admin', query: { msg: 'Producto creado', type: 'success' } });
+      router.push({ path: '/panel', query: { msg: 'Producto creado', type: 'success' } });
     }
   } catch (e) {
     error.value = (e as Error).message;
   }
 }
 </script>
+

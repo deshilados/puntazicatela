@@ -1,4 +1,5 @@
 <template>
+  <Navbar />
   <div class="mt-5 pt-5" style="min-height: 70vh">
     <div class="container">
       <div class="row justify-content-center">
@@ -70,7 +71,10 @@
                       <button type="submit" class="btn btn-success flex-sm-fill">
                         <i class="bi bi-whatsapp me-2"></i>Solicitar Pedido
                       </button>
-                      <router-link :to="selectedProduct ? '/producto/' + selectedProduct.id : '/'" class="btn btn-outline-secondary flex-sm-fill ms-2">
+                      <router-link
+                        :to="selectedProduct ? '/producto/' + selectedProduct.id : '/'"
+                        class="btn btn-outline-secondary flex-sm-fill ms-2"
+                      >
                         <i class="bi bi-arrow-left me-2"></i>Volver
                       </router-link>
                     </div>
@@ -91,11 +95,15 @@
       </div>
     </div>
   </div>
+
+  <ContactoFooter />
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import Navbar from '@/components/Navbar.vue';
+import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { useProductsStore } from '@/stores/productsStore';
 import { useSiteContentStore } from '@/stores/siteContentStore';
 import { numberToWhatsAppUrl } from '@/stores/siteContentStore';
@@ -165,3 +173,4 @@ function submitOrder() {
   object-fit: cover;
 }
 </style>
+

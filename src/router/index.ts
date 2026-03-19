@@ -1,67 +1,54 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import MainLayoutTextil from '@/layouts/MainLayoutTextil.vue';
-import AdminLayout from '@/layouts/AdminLayout.vue';
+import Home from '@/pages/Home.vue';
+import Categorias from '@/pages/Categorias.vue';
+import ProductoShow from '@/pages/ProductoShow.vue';
+import Ordenar from '@/pages/Ordenar.vue';
+import Login from '@/pages/Login.vue';
+import Register from '@/pages/Register.vue';
+import About from '@/pages/About.vue';
+import Contact from '@/pages/Contact.vue';
 
-import HomeTextil from '@/pages/textil/HomeTextil.vue';
-import Categorias from '@/pages/textil/Categorias.vue';
-import ProductoShow from '@/pages/textil/ProductoShow.vue';
-import Ordenar from '@/pages/textil/Ordenar.vue';
-import LoginTextil from '@/pages/textil/LoginTextil.vue';
-import RegisterTextil from '@/pages/textil/RegisterTextil.vue';
-import About from '@/pages/textil/About.vue';
-import Contact from '@/pages/textil/Contact.vue';
-
-import AdminLogin from '@/pages/admin/AdminLogin.vue';
-import AdminProducts from '@/pages/admin/AdminProducts.vue';
-import AdminProductForm from '@/pages/admin/AdminProductForm.vue';
-import AdminContenido from '@/pages/admin/AdminContenido.vue';
+import PanelLogin from '@/pages/PanelLogin.vue';
+import PanelProducts from '@/pages/PanelProducts.vue';
+import PanelProductForm from '@/pages/PanelProductForm.vue';
+import PanelContenido from '@/pages/PanelContenido.vue';
 
 import { useAdminAuthStore } from '@/stores/adminAuthStore';
 
 const routes = [
-  {
-    path: '/',
-    component: MainLayoutTextil,
-    children: [
-      { path: '', name: 'Home', component: HomeTextil },
-      { path: 'categorias', name: 'Categorias', component: Categorias },
-      { path: 'producto/:id', name: 'ProductoShow', component: ProductoShow },
-      { path: 'ordenar', name: 'Ordenar', component: Ordenar },
-      { path: 'login', name: 'Login', component: LoginTextil },
-      { path: 'register', name: 'Register', component: RegisterTextil },
-      { path: 'about', name: 'About', component: About },
-      { path: 'contact', name: 'Contact', component: Contact }
-    ]
-  },
-  {
-    path: '/admin',
-    component: AdminLayout,
-    beforeEnter: (_to, _from, next) => {
-      const adminAuth = useAdminAuthStore();
-      adminAuth.initFromStorage();
-      next();
-    },
-    children: [
-      { path: '', name: 'Admin', component: AdminProducts, meta: { admin: true } },
-      { path: 'login', name: 'AdminLogin', component: AdminLogin },
-      { path: 'crear', name: 'AdminCrear', component: AdminProductForm, meta: { admin: true } },
-      { path: 'editar/:id', name: 'AdminEditar', component: AdminProductForm, meta: { admin: true } },
-      { path: 'contenido', name: 'AdminContenido', component: AdminContenido, meta: { admin: true } }
-    ]
-  }
+  { path: '/', name: 'Home', component: Home },
+  { path: '/categorias', name: 'Categorias', component: Categorias },
+  { path: '/producto/:id', name: 'ProductoShow', component: ProductoShow },
+  { path: '/ordenar', name: 'Ordenar', component: Ordenar },
+  { path: '/login', name: 'Login', component: Login },
+  { path: '/register', name: 'Register', component: Register },
+  { path: '/about', name: 'About', component: About },
+  { path: '/contact', name: 'Contact', component: Contact },
+
+  { path: '/panel', name: 'Panel', component: PanelProducts, meta: { requiresPanelAdmin: true } },
+  { path: '/panel/login', name: 'PanelLogin', component: PanelLogin },
+  { path: '/panel/crear', name: 'PanelCrear', component: PanelProductForm, meta: { requiresPanelAdmin: true } },
+  { path: '/panel/editar/:id', name: 'PanelEditar', component: PanelProductForm, meta: { requiresPanelAdmin: true } },
+  { path: '/panel/contenido', name: 'PanelContenido', component: PanelContenido, meta: { requiresPanelAdmin: true } }
 ];
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
+  routes,
+  scrollBehavior(_to, _from, savedPosition) {
+    // Siempre volver al inicio al cambiar de ruta para que no “quede” scroll
+    // del componente anterior.
+    if (savedPosition) return savedPosition;
+    return { top: 0 };
+  }
 });
 
 router.beforeEach((to, _from, next) => {
-  if (to.meta.admin) {
+  if (to.meta.requiresPanelAdmin) {
     const adminAuth = useAdminAuthStore();
     adminAuth.initFromStorage();
     if (!adminAuth.isAdmin) {
-      next({ path: '/admin/login' });
+      next({ path: '/panel/login' });
       return;
     }
   }
