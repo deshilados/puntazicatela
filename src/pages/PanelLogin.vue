@@ -15,12 +15,13 @@
             <label for="password" class="form-label">Contraseña</label>
             <input v-model="password" type="password" class="form-control" id="password" required autocomplete="current-password" placeholder="••••••••" />
           </div>
-          <button type="submit" class="btn btn-dark w-100" :disabled="adminAuth.loading">Entrar</button>
+          <button type="submit" class="btn btn-primary w-100" :disabled="adminAuth.loading">Entrar</button>
           <router-link to="/" class="btn btn-link w-100 d-block text-center mt-2">Volver a la página principal</router-link>
         </form>
       </div>
     </div>
   </div>
+  <ContactoFooter />
 </template>
 
 <script setup lang="ts">
@@ -28,6 +29,7 @@ import Swal from 'sweetalert2';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Navbar from '@/components/Navbar.vue';
+import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { useAdminAuthStore } from '@/stores/adminAuthStore';
 
 const router = useRouter();

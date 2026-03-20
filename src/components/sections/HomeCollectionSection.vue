@@ -7,9 +7,17 @@
           <h2 class="display-4 fw-normal mb-3">{{ collection.title || 'Prendas Artesanales' }}</h2>
           <p class="text-muted" style="max-width: 500px">{{ collection.description }}</p>
         </div>
-        <div class="col-lg-6 text-lg-end d-flex align-items-center justify-content-lg-end">
+        <div class="col-lg-6 text-lg-end d-flex align-items-center justify-content-lg-end gap-2 flex-wrap">
           <router-link to="/categorias" class="btn btn-success px-4 py-2">
             <i class="bi bi-grid me-2"></i>Ver Todas las Categorías
+          </router-link>
+
+          <router-link
+            v-if="adminAuth.isAdmin"
+            :to="{ path: '/panel/crear', query: { returnTo: route.fullPath } }"
+            class="btn btn-primary px-4 py-2"
+          >
+            <i class="bi bi-plus-lg me-2"></i>Nuevo producto
           </router-link>
         </div>
       </div>
@@ -34,7 +42,9 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from 'vue-router';
 import { useProductsStore } from '@/stores/productsStore';
+import { useAdminAuthStore } from '@/stores/adminAuthStore';
 import ProductCard from '@/components/ProductCard.vue';
 import SkeletonProductGrid from '@/components/SkeletonProductGrid.vue';
 
@@ -48,7 +58,9 @@ const props = defineProps<{
   collection: HomeCollection;
 }>();
 
+const route = useRoute();
 const productsStore = useProductsStore();
 const collection = props.collection;
+const adminAuth = useAdminAuthStore();
 </script>
 

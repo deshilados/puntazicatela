@@ -17,7 +17,7 @@
                   <label for="password" class="form-label">Contraseña</label>
                   <input v-model="password" type="password" class="form-control" id="password" required autocomplete="current-password" />
                 </div>
-                <button type="submit" class="btn btn-dark w-100">Entrar</button>
+                <button type="submit" class="btn btn-primary w-100">Entrar</button>
               </form>
               <p class="mt-3 mb-0 text-center small text-muted">
                 ¿No tienes cuenta?

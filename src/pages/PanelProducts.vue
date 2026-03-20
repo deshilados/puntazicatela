@@ -1,10 +1,10 @@
 <template>
   <Navbar />
-  <div>
+  <div class="panel-products-page px-5">
     <h1 class="h4 fw-bold text-center pt-5">Productos</h1>
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
       <span class="text-muted small">{{ productsStore.all.length }} producto(s)</span>
-      <router-link to="/panel/crear" class="btn btn-dark btn-sm"><i class="bi bi-plus-lg"></i> Nuevo producto</router-link>
+      <router-link to="/panel/crear" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Nuevo producto</router-link>
     </div>
     <div class="card shadow-sm mb-4">
       <div v-if="productsStore.loading" class="card-body">
@@ -19,7 +19,7 @@
       <div v-else-if="!productsStore.all.length" class="card-body text-center py-5 text-muted">
         <p class="fw-bold mb-2">No hay productos</p>
         <p class="mb-3">Crea el primero desde el botón «Nuevo producto».</p>
-        <router-link to="/panel/crear" class="btn btn-dark">Nuevo producto</router-link>
+        <router-link to="/panel/crear" class="btn btn-primary">Nuevo producto</router-link>
       </div>
       <div v-else class="table-responsive">
         <table class="table table-hover align-middle mb-0">
@@ -72,12 +72,14 @@
       </div>
     </div>
   </div>
+  <ContactoFooter />
 </template>
 
 <script setup lang="ts">
 import Swal from 'sweetalert2';
 import { onMounted } from 'vue';
 import Navbar from '@/components/Navbar.vue';
+import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { useProductsStore } from '@/stores/productsStore';
 import { productImageUrl } from '@/utils/productImageUrl';
 

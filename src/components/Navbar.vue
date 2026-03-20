@@ -83,7 +83,7 @@
         <form class="d-flex" role="search" @submit.prevent="onSearch">
           <input v-model="searchQuery" class="form-control me-2" type="search"
             placeholder="Buscar productos, categorías y más..." aria-label="Buscar productos" />
-          <button class="btn btn-outline-dark" type="submit" aria-label="Buscar">
+          <button class="btn btn-outline-primary" type="submit" aria-label="Buscar">
             <i class="fa-solid fa-magnifying-glass" aria-hidden="true" />
           </button>
         </form>
@@ -127,7 +127,8 @@ const isProductosActive = computed(() => (
   (route.path === '/panel' || route.path.startsWith('/panel/crear') || route.path.startsWith('/panel/editar'))
 ));
 const isContenidoActive = computed(() => adminAuth.isAdmin && route.path.startsWith('/panel/contenido'));
-const isPanelArea = computed(() => route.path.startsWith('/panel'));
+// Mostramos "Iniciar sesión" en `/panel/login`, pero ocultamos el link en el resto de panel.
+const isPanelArea = computed(() => route.path.startsWith('/panel') && route.path !== '/panel/login');
 const canShowLogin = computed(() => !adminAuth.isAdmin && !isPanelArea.value);
 
 const searchTo = computed(() => (

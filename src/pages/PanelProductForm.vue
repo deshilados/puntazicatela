@@ -1,10 +1,30 @@
 <template>
   <Navbar />
-  <div class="card shadow-sm mx-auto pt-5" style="max-width: 720px; margin-top: 2rem;">
+  <div class="card shadow-sm mx-auto pt-5 mb-4" style="max-width: 720px; margin-top: 2rem;">
     <div class="card-body p-4">
       <h1 class="h4 fw-bold mb-3 text-center">{{ isEdit ? 'Editar producto' : 'Nuevo producto' }}</h1>
       <div v-if="error" class="alert alert-danger">{{ error }}</div>
-      <form @submit.prevent="submit">
+      <div v-if="loadingEditData" class="placeholder-glow">
+        <div class="placeholder col-6 mb-3" style="height: 38px"></div>
+        <div class="placeholder col-12 mb-3" style="height: 80px"></div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="placeholder col-12" style="height: 38px"></div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="placeholder col-12" style="height: 38px"></div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="placeholder col-12" style="height: 38px"></div>
+          </div>
+        </div>
+        <div class="placeholder col-12 mb-2" style="height: 38px"></div>
+        <div class="placeholder col-12 mb-2" style="height: 38px"></div>
+        <div class="placeholder col-12 mb-4" style="height: 38px"></div>
+        <div class="placeholder col-5" style="height: 40px"></div>
+      </div>
+
+      <form v-else @submit.prevent="submit">
         <div class="mb-3">
           <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
           <input v-model="form.nombre" type="text" class="form-control" id="nombre" required />
@@ -34,22 +54,12 @@
           <label class="form-label">Imágenes del producto</label>
           <p class="small text-muted">
             Agrega cada imagen en su propio campo (solo nombre de archivo, ej: <code>1_1.jpeg</code>).
-            Se guarda como JSON y se resuelve desde <code>images/productos/</code>.
           </p>
           <div v-for="(_, idx) in imageNames" :key="'img-' + idx" class="input-group mb-2">
             <span class="input-group-text">#{{ idx + 1 }}</span>
-            <input
-              v-model="imageNames[idx]"
-              type="text"
-              class="form-control"
-              placeholder="1_1.jpeg"
-            />
-            <button
-              type="button"
-              class="btn btn-outline-danger"
-              :disabled="imageNames.length === 1"
-              @click="removeImageField(idx)"
-            >
+            <input v-model="imageNames[idx]" type="text" class="form-control" placeholder="1_1.jpeg" />
+            <button type="button" class="btn btn-outline-danger" :disabled="imageNames.length === 1"
+              @click="removeImageField(idx)">
               Quitar
             </button>
           </div>
@@ -57,13 +67,8 @@
             <i class="bi bi-plus-lg me-1"></i>Agregar imagen
           </button>
 
-          <img
-            v-if="firstImageName"
-            :src="productImageUrl(firstImageName)"
-            alt="Vista previa"
-            class="img-thumbnail mt-2 d-block"
-            style="max-height: 120px"
-          />
+          <img v-if="firstImageName" :src="productImageUrl(firstImageName)" alt="Vista previa"
+            class="img-thumbnail mt-2 d-block" style="max-height: 120px" />
         </div>
         <div class="mb-3">
           <label class="form-label">Tallas disponibles</label>
@@ -74,12 +79,8 @@
           <div v-for="(_, idx) in tallasNames" :key="'talla-' + idx" class="input-group mb-2">
             <span class="input-group-text">#{{ idx + 1 }}</span>
             <input v-model="tallasNames[idx]" type="text" class="form-control" placeholder="Ej: S" />
-            <button
-              type="button"
-              class="btn btn-outline-danger"
-              :disabled="tallasNames.length === 1"
-              @click="removeTallaField(idx)"
-            >
+            <button type="button" class="btn btn-outline-danger" :disabled="tallasNames.length === 1"
+              @click="removeTallaField(idx)">
               Quitar
             </button>
           </div>
@@ -99,18 +100,20 @@
           </div>
         </div>
         <div class="text-center">
-          <button type="submit" class="btn btn-dark me-2">{{ isEdit ? 'Guardar cambios' : 'Crear producto' }}</button>
-          <router-link to="/panel" class="btn btn-outline-secondary">Cancelar</router-link>
+          <button type="submit" class="btn btn-primary me-2">{{ isEdit ? 'Guardar cambios' : 'Crear producto' }}</button>
+          <router-link :to="cancelTo" class="btn btn-outline-secondary">Cancelar</router-link>
         </div>
       </form>
     </div>
   </div>
+  <ContactoFooter />
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Navbar from '@/components/Navbar.vue';
+import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { useProductsStore } from '@/stores/productsStore';
 import { productImageUrl } from '@/utils/productImageUrl';
 import Swal from 'sweetalert2';
@@ -124,6 +127,18 @@ const isEdit = computed(() => !!id.value && id.value > 0);
 
 const categories = ref<string[]>([]);
 const error = ref('');
+// En edición arrancamos en loading para evitar parpadeo de formulario vacío.
+const loadingEditData = ref(isEdit.value);
+
+function safeReturnTo(path: string | undefined): string | null {
+  if (!path) return null;
+  // Solo aceptamos rutas internas que comiencen con "/".
+  if (!path.startsWith('/') || path.startsWith('//')) return null;
+  return path;
+}
+
+const returnTo = computed(() => safeReturnTo(route.query.returnTo as string | undefined));
+const cancelTo = computed(() => returnTo.value ?? '/panel');
 
 const form = reactive({
   nombre: '',
@@ -218,20 +233,25 @@ function removeTallaField(idx: number) {
 onMounted(async () => {
   categories.value = await productsStore.getCategoriesAll();
   if (isEdit.value) {
-    const p = await productsStore.fetchById(id.value);
-    if (p) {
-      form.nombre = p.nombre;
-      form.descripcion = p.descripcion ?? '';
-      form.categoria = p.categoria;
-      form.precio = p.precio;
-      form.stock = p.stock;
-      form.imagen_url = p.imagen_url ?? '';
-      imageNames.value = parseImageList(form.imagen_url);
-      if (!imageNames.value.length) imageNames.value = [''];
-      form.activo = p.activo;
-      form.portada = p.portada;
-      tallasNames.value = parseTallasList(p.tallas_disponibles ?? '');
-      if (!tallasNames.value.length) tallasNames.value = [''];
+    loadingEditData.value = true;
+    try {
+      const p = await productsStore.fetchById(id.value);
+      if (p) {
+        form.nombre = p.nombre;
+        form.descripcion = p.descripcion ?? '';
+        form.categoria = p.categoria;
+        form.precio = p.precio;
+        form.stock = p.stock;
+        form.imagen_url = p.imagen_url ?? '';
+        imageNames.value = parseImageList(form.imagen_url);
+        if (!imageNames.value.length) imageNames.value = [''];
+        form.activo = p.activo;
+        form.portada = p.portada;
+        tallasNames.value = parseTallasList(p.tallas_disponibles ?? '');
+        if (!tallasNames.value.length) tallasNames.value = [''];
+      }
+    } finally {
+      loadingEditData.value = false;
     }
   }
 });
@@ -277,7 +297,7 @@ async function submit() {
         title: 'Listo',
         text: 'Producto actualizado correctamente.',
       });
-      router.push({ path: '/panel' });
+      router.push(returnTo.value ?? '/panel');
     } else {
       await productsStore.create({ ...form });
       Swal.close();
@@ -286,7 +306,7 @@ async function submit() {
         title: 'Listo',
         text: 'Producto creado correctamente.',
       });
-      router.push({ path: '/panel' });
+      router.push(returnTo.value ?? '/panel');
     }
   } catch (e) {
     Swal.close();
@@ -299,4 +319,3 @@ async function submit() {
   }
 }
 </script>
-

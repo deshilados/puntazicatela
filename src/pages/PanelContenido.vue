@@ -1,222 +1,244 @@
 <template>
   <Navbar />
-  <div class="card shadow-sm mb-4 pt-5">
-    <div class="card-header bg-dark text-white">
-      <h1 class="h5 mb-0">Textos y datos del sitio</h1>
-    </div>
-    <div class="card-body p-4">
-      <form @submit.prevent="submit">
-        <ul class="nav nav-tabs mb-3" role="tablist">
-          <li class="nav-item">
-            <button type="button" class="nav-link" :class="{ active: tab === 'meta' }" @click="tab = 'meta'">Meta / SEO</button>
-          </li>
-          <li class="nav-item">
-            <button type="button" class="nav-link" :class="{ active: tab === 'encabezado' }" @click="tab = 'encabezado'">Encabezado y home</button>
-          </li>
-          <li class="nav-item">
-            <button type="button" class="nav-link" :class="{ active: tab === 'nosotros' }" @click="tab = 'nosotros'">Nosotros</button>
-          </li>
-          <li class="nav-item">
-            <button type="button" class="nav-link" :class="{ active: tab === 'footer' }" @click="tab = 'footer'">Pie de página</button>
-          </li>
-        </ul>
-
-        <div v-show="tab === 'meta'" class="tab-pane">
-          <div class="mb-3">
-            <label class="form-label">Nombre del sitio</label>
-            <input v-model="form.meta_site_name" type="text" class="form-control" />
+  <div class="container pt-5 pb-4 panel-contenido-wrap">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-white border-bottom py-3">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+          <div>
+            <p class="small text-uppercase text-muted mb-1">Panel de administración</p>
+            <h1 class="h5 mb-0">Textos y datos del sitio</h1>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Ruta del icono (ej: site/icon.png)</label>
-            <input v-model="form.meta_site_icon" type="text" class="form-control" placeholder="site/icon.png" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Descripción (SEO)</label>
-            <textarea v-model="form.meta_site_description" class="form-control" rows="2"></textarea>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Ubicación</label>
-            <input v-model="form.meta_site_location" type="text" class="form-control" />
-          </div>
+          <span class="badge text-bg-light border">Contenido editable</span>
         </div>
+      </div>
 
-        <div v-show="tab === 'encabezado'" class="tab-pane">
-          <div class="mb-3">
-            <label class="form-label">Marca (navbar)</label>
-            <input v-model="form.navbar_brand" type="text" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Ruta logo navbar (ej: site/logo-navbar.png)</label>
-            <input v-model="form.navbar_logo" type="text" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Ruta banner hero (ej: site/banner.jpg)</label>
-            <input v-model="form.home_hero_image" type="text" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Lugar hero</label>
-            <input v-model="form.home_hero_location" type="text" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Título hero</label>
-            <input v-model="form.home_hero_title" type="text" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Descripción hero</label>
-            <textarea v-model="form.home_hero_description" class="form-control" rows="2"></textarea>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Título sección colección</label>
-            <input v-model="form.home_collection_title" type="text" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Descripción colección</label>
-            <textarea v-model="form.home_collection_description" class="form-control" rows="2"></textarea>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Mensaje cuando no hay productos</label>
-            <input v-model="form.home_collection_no_products" type="text" class="form-control" />
-          </div>
-        </div>
+      <div class="card-body p-4">
+        <form @submit.prevent="submit">
+          <ul class="nav nav-pills panel-tabs mb-4" role="tablist">
+            <li class="nav-item">
+              <button type="button" class="nav-link" :class="{ active: tab === 'meta' }" @click="tab = 'meta'">Meta /
+                SEO</button>
+            </li>
+            <li class="nav-item">
+              <button type="button" class="nav-link" :class="{ active: tab === 'encabezado' }"
+                @click="tab = 'encabezado'">Encabezado y home</button>
+            </li>
+            <li class="nav-item">
+              <button type="button" class="nav-link" :class="{ active: tab === 'nosotros' }"
+                @click="tab = 'nosotros'">Nosotros</button>
+            </li>
+            <li class="nav-item">
+              <button type="button" class="nav-link" :class="{ active: tab === 'footer' }" @click="tab = 'footer'">Pie
+                de página</button>
+            </li>
+          </ul>
 
-        <div v-show="tab === 'nosotros'" class="tab-pane">
-          <div class="mb-3">
-            <label class="form-label">Ruta imagen nosotros (ej: site/about.jpg)</label>
-            <input v-model="form.home_about_image" type="text" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Badge (ej: Nuestra Historia)</label>
-            <input v-model="form.home_about_badge" type="text" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Título nosotros</label>
-            <input v-model="form.home_about_title" type="text" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Descripción 1</label>
-            <textarea v-model="form.home_about_description1" class="form-control" rows="2"></textarea>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Descripción 2</label>
-            <textarea v-model="form.home_about_description2" class="form-control" rows="2"></textarea>
-          </div>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Stat 1 valor (ej: 15+)</label>
-              <input v-model="form.home_about_stats_years_value" type="text" class="form-control" />
+          <div v-show="tab === 'meta'" class="tab-pane panel-section">
+            <h2 class="h6 text-uppercase text-muted mb-3">Meta / SEO</h2>
+            <div class="mb-3">
+              <label class="form-label">Nombre del sitio</label>
+              <input v-model="form.meta_site_name" type="text" class="form-control" />
             </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Stat 1 etiqueta</label>
-              <input v-model="form.home_about_stats_years_label" type="text" class="form-control" />
+            <div class="mb-3">
+              <label class="form-label">Ruta del icono (ej: site/icon.png)</label>
+              <input v-model="form.meta_site_icon" type="text" class="form-control" placeholder="site/icon.png" />
             </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Stat 2 valor</label>
-              <input v-model="form.home_about_stats_countrys_value" type="text" class="form-control" />
+            <div class="mb-3">
+              <label class="form-label">Descripción (SEO)</label>
+              <textarea v-model="form.meta_site_description" class="form-control" rows="2"></textarea>
             </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Stat 2 etiqueta</label>
-              <input v-model="form.home_about_stats_countrys_label" type="text" class="form-control" />
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Stat 3 valor</label>
-              <input v-model="form.home_about_stats_products_value" type="text" class="form-control" />
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Stat 3 etiqueta</label>
-              <input v-model="form.home_about_stats_products_label" type="text" class="form-control" />
+            <div class="mb-0">
+              <label class="form-label">Ubicación</label>
+              <input v-model="form.meta_site_location" type="text" class="form-control" />
             </div>
           </div>
-        </div>
 
-        <div v-show="tab === 'footer'" class="tab-pane">
-          <div class="mb-3">
-            <label class="form-label">Marca footer</label>
-            <input v-model="form.footer_brand" type="text" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Descripción footer</label>
-            <textarea v-model="form.footer_description" class="form-control" rows="2"></textarea>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Título contacto</label>
-            <input v-model="form.footer_contact_title" type="text" class="form-control" />
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Dirección</label>
-              <input v-model="form.footer_contact_street" type="text" class="form-control" />
+          <div v-show="tab === 'encabezado'" class="tab-pane panel-section">
+            <h2 class="h6 text-uppercase text-muted mb-3">Encabezado y home</h2>
+            <div class="mb-3">
+              <label class="form-label">Marca (navbar)</label>
+              <input v-model="form.navbar_brand" type="text" class="form-control" />
             </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Ciudad</label>
-              <input v-model="form.footer_contact_city" type="text" class="form-control" />
+            <div class="mb-3">
+              <label class="form-label">Ruta logo navbar (ej: site/logo-navbar.png)</label>
+              <input v-model="form.navbar_logo" type="text" class="form-control" />
             </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Teléfono</label>
-              <input v-model="form.footer_contact_phone" type="text" class="form-control" />
+            <div class="mb-3">
+              <label class="form-label">Ruta banner hero (ej: site/banner.jpg)</label>
+              <input v-model="form.home_hero_image" type="text" class="form-control" />
             </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Email</label>
-              <input v-model="form.footer_contact_email" type="email" class="form-control" />
+            <div class="mb-3">
+              <label class="form-label">Lugar hero</label>
+              <input v-model="form.home_hero_location" type="text" class="form-control" />
             </div>
-          </div>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Título horario</label>
-              <input v-model="form.footer_schedule_title" type="text" class="form-control" />
+            <div class="mb-3">
+              <label class="form-label">Título hero</label>
+              <input v-model="form.home_hero_title" type="text" class="form-control" />
             </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Días</label>
-              <input v-model="form.footer_schedule_days" type="text" class="form-control" />
+            <div class="mb-3">
+              <label class="form-label">Descripción hero</label>
+              <textarea v-model="form.home_hero_description" class="form-control" rows="2"></textarea>
             </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Horas</label>
-              <input v-model="form.footer_schedule_hours" type="text" class="form-control" />
+            <div class="mb-3">
+              <label class="form-label">Título sección colección</label>
+              <input v-model="form.home_collection_title" type="text" class="form-control" />
             </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Días 2</label>
-              <input v-model="form.footer_schedule_days_2" type="text" class="form-control" />
+            <div class="mb-3">
+              <label class="form-label">Descripción colección</label>
+              <textarea v-model="form.home_collection_description" class="form-control" rows="2"></textarea>
             </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Horas 2</label>
-              <input v-model="form.footer_schedule_hours_2" type="text" class="form-control" />
+            <div class="mb-0">
+              <label class="form-label">Mensaje cuando no hay productos</label>
+              <input v-model="form.home_collection_no_products" type="text" class="form-control" />
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Facebook URL</label>
-              <input v-model="form.footer_social_facebook" type="url" class="form-control" />
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Instagram URL</label>
-              <input v-model="form.footer_social_instagram" type="url" class="form-control" />
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">WhatsApp (número o URL wa.me/...)</label>
-              <input v-model="form.footer_social_whatsapp" type="text" class="form-control" placeholder="529541817823 o https://wa.me/..." />
-            </div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Copyright texto</label>
-            <input v-model="form.footer_copyright_text" type="text" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Hecho con / mensaje final</label>
-            <input v-model="form.footer_copyright_made_with" type="text" class="form-control" />
-          </div>
-        </div>
 
-        <div class="d-flex gap-2 mt-3">
-          <button type="submit" class="btn btn-success">Guardar cambios</button>
-          <router-link to="/panel" class="btn btn-outline-secondary">Volver a productos</router-link>
-        </div>
-      </form>
+          <div v-show="tab === 'nosotros'" class="tab-pane panel-section">
+            <h2 class="h6 text-uppercase text-muted mb-3">Sección nosotros</h2>
+            <div class="mb-3">
+              <label class="form-label">Ruta imagen nosotros (ej: site/about.jpg)</label>
+              <input v-model="form.home_about_image" type="text" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Badge (ej: Nuestra Historia)</label>
+              <input v-model="form.home_about_badge" type="text" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Título nosotros</label>
+              <input v-model="form.home_about_title" type="text" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Descripción 1</label>
+              <textarea v-model="form.home_about_description1" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Descripción 2</label>
+              <textarea v-model="form.home_about_description2" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Stat 1 valor (ej: 15+)</label>
+                <input v-model="form.home_about_stats_years_value" type="text" class="form-control" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Stat 1 etiqueta</label>
+                <input v-model="form.home_about_stats_years_label" type="text" class="form-control" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Stat 2 valor</label>
+                <input v-model="form.home_about_stats_countrys_value" type="text" class="form-control" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Stat 2 etiqueta</label>
+                <input v-model="form.home_about_stats_countrys_label" type="text" class="form-control" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Stat 3 valor</label>
+                <input v-model="form.home_about_stats_products_value" type="text" class="form-control" />
+              </div>
+              <div class="col-md-4 mb-0">
+                <label class="form-label">Stat 3 etiqueta</label>
+                <input v-model="form.home_about_stats_products_label" type="text" class="form-control" />
+              </div>
+            </div>
+          </div>
+
+          <div v-show="tab === 'footer'" class="tab-pane panel-section">
+            <h2 class="h6 text-uppercase text-muted mb-3">Pie de página</h2>
+            <div class="mb-3">
+              <label class="form-label">Marca footer</label>
+              <input v-model="form.footer_brand" type="text" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Descripción footer</label>
+              <textarea v-model="form.footer_description" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Título contacto</label>
+              <input v-model="form.footer_contact_title" type="text" class="form-control" />
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Dirección</label>
+                <input v-model="form.footer_contact_street" type="text" class="form-control" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Ciudad</label>
+                <input v-model="form.footer_contact_city" type="text" class="form-control" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Teléfono</label>
+                <input v-model="form.footer_contact_phone" type="text" class="form-control" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Email</label>
+                <input v-model="form.footer_contact_email" type="email" class="form-control" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Título horario</label>
+                <input v-model="form.footer_schedule_title" type="text" class="form-control" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Días</label>
+                <input v-model="form.footer_schedule_days" type="text" class="form-control" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Horas</label>
+                <input v-model="form.footer_schedule_hours" type="text" class="form-control" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Días 2</label>
+                <input v-model="form.footer_schedule_days_2" type="text" class="form-control" />
+              </div>
+              <div class="col-md-4 mb-0">
+                <label class="form-label">Horas 2</label>
+                <input v-model="form.footer_schedule_hours_2" type="text" class="form-control" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Facebook URL</label>
+                <input v-model="form.footer_social_facebook" type="url" class="form-control" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Instagram URL</label>
+                <input v-model="form.footer_social_instagram" type="url" class="form-control" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">WhatsApp (número o URL wa.me/...)</label>
+                <input v-model="form.footer_social_whatsapp" type="text" class="form-control"
+                  placeholder="529541817823 o https://wa.me/..." />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Copyright texto</label>
+              <input v-model="form.footer_copyright_text" type="text" class="form-control" />
+            </div>
+            <div class="mb-0">
+              <label class="form-label">Hecho con / mensaje final</label>
+              <input v-model="form.footer_copyright_made_with" type="text" class="form-control" />
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-check2-circle me-2"></i>Guardar cambios
+            </button>
+            <router-link to="/panel" class="btn btn-outline-secondary">Volver a productos</router-link>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
+  <ContactoFooter />
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import Navbar from '@/components/Navbar.vue';
+import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { useSiteContentStore } from '@/stores/siteContentStore';
 import { numberToWhatsAppUrl } from '@/stores/siteContentStore';
 import Swal from 'sweetalert2';
@@ -314,3 +336,43 @@ async function submit() {
 }
 </script>
 
+<style scoped>
+.panel-contenido-wrap {
+  max-width: 1040px;
+}
+
+.panel-tabs {
+  gap: 0.5rem;
+}
+
+.panel-tabs .nav-link {
+  border-radius: 999px;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 0.45rem 0.95rem;
+  font-weight: 500;
+}
+
+.panel-tabs .nav-link:hover {
+  color: #111827;
+  border-color: #d1d5db;
+}
+
+.panel-tabs .nav-link.active {
+  color: #ffffff;
+  background: #111827;
+  border-color: #111827;
+}
+
+.panel-section {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: #ffffff;
+}
+
+.form-label {
+  font-weight: 500;
+}
+</style>

@@ -40,14 +40,6 @@
                       <input v-model="form.name" type="text" class="form-control" required placeholder="Ej: Juan Pérez" />
                     </div>
                     <div class="col-md-6">
-                      <label class="form-label">Correo Electrónico *</label>
-                      <input v-model="form.email" type="email" class="form-control" required placeholder="Ej: ejemplo@gmail.com" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label">Teléfono *</label>
-                      <input v-model="form.phone" type="tel" class="form-control" required placeholder="Ej: 954 123 4567" />
-                    </div>
-                    <div class="col-md-6">
                       <label class="form-label">Selecciona un Producto *</label>
                       <select v-model="form.productId" class="form-select" required>
                         <option value="">Elige un producto...</option>
@@ -64,8 +56,8 @@
                       </select>
                     </div>
                     <div class="col-md-6">
-                      <label class="form-label">Estado / Ciudad</label>
-                      <input v-model="form.city" type="text" class="form-control" placeholder="Ej: CDMX, Guadalajara" />
+                      <label class="form-label">Dirección</label>
+                      <input v-model="form.address" type="text" class="form-control" placeholder="Ej: Calle, número, colonia, ciudad" />
                     </div>
                     <div class="col-12">
                       <label class="form-label">Notas Adicionales</label>
@@ -138,11 +130,9 @@ function firstImageFrom(imagenUrl: string | null | undefined): string | null {
 
 const form = ref({
   name: '',
-  email: '',
-  phone: '',
   productId: '',
   size: '',
-  city: '',
+  address: '',
   message: ''
 });
 
@@ -194,7 +184,7 @@ function submitOrder() {
   const productId = form.value.productId;
   const product = allProducts.value.find((p) => p.id === Number(productId));
   const productInfo = product ? `${product.nombre} ($${Number(product.precio).toFixed(2)})` : 'Producto personalizado';
-  const text = `Hola, me interesa hacer un pedido.\n\nNombre: ${form.value.name}\nEmail: ${form.value.email}\nTel: ${form.value.phone}\nProducto: ${productInfo}\nTalla: ${form.value.size || '-'}\nCiudad: ${form.value.city || '-'}\nMensaje: ${form.value.message || '-'}`;
+  const text = `Hola, me interesa hacer un pedido.\n\nNombre: ${form.value.name}\nProducto: ${productInfo}\nTalla: ${form.value.size || '-'}\nDirección: ${form.value.address || '-'}\nMensaje: ${form.value.message || '-'}`;
   const waUrl = wa || numberToWhatsAppUrl('529541817823');
   const url = waUrl.replace(/\/$/, '') + '?text=' + encodeURIComponent(text);
   window.open(url, '_blank');

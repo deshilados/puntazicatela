@@ -4,8 +4,6 @@ import Categorias from '@/pages/Categorias.vue';
 import ProductoShow from '@/pages/ProductoShow.vue';
 import Ordenar from '@/pages/Ordenar.vue';
 import Login from '@/pages/Login.vue';
-import About from '@/pages/About.vue';
-import Contact from '@/pages/Contact.vue';
 
 import PanelLogin from '@/pages/PanelLogin.vue';
 import PanelProducts from '@/pages/PanelProducts.vue';
@@ -20,8 +18,6 @@ const routes = [
   { path: '/producto/:id', name: 'ProductoShow', component: ProductoShow },
   { path: '/ordenar', name: 'Ordenar', component: Ordenar },
   { path: '/login', name: 'Login', component: Login },
-  { path: '/about', name: 'About', component: About },
-  { path: '/contact', name: 'Contact', component: Contact },
 
   { path: '/panel', name: 'Panel', component: PanelProducts, meta: { requiresPanelAdmin: true } },
   { path: '/panel/login', name: 'PanelLogin', component: PanelLogin },
