@@ -52,9 +52,7 @@
         </div>
         <div class="mb-3">
           <label class="form-label">Imágenes del producto</label>
-          <p class="small text-muted">
-            Agrega cada imagen en su propio campo (solo nombre de archivo, ej: <code>1_1.jpeg</code>).
-          </p>
+          <PathFieldNote />
           <div v-for="(_, idx) in imageNames" :key="'img-' + idx" class="input-group mb-2">
             <span class="input-group-text">#{{ idx + 1 }}</span>
             <input v-model="imageNames[idx]" type="text" class="form-control" placeholder="1_1.jpeg" />
@@ -113,6 +111,7 @@
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Navbar from '@/components/Navbar.vue';
+import PathFieldNote from '@/components/PathFieldNote.vue';
 import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { useProductsStore } from '@/stores/productsStore';
 import { productImageUrl } from '@/utils/productImageUrl';
