@@ -9,11 +9,30 @@
         <form @submit.prevent="submit">
           <div class="mb-3">
             <label for="email" class="form-label">Correo electrónico</label>
-            <input v-model="email" type="email" class="form-control" id="email" required autocomplete="email" placeholder="admin@deshiladospxm.com" />
+            <input v-model="email" type="email" class="form-control" id="email" required autocomplete="email" placeholder="deshiladospxm@outlook.com" />
           </div>
           <div class="mb-4">
             <label for="password" class="form-label">Contraseña</label>
-            <input v-model="password" type="password" class="form-control" id="password" required autocomplete="current-password" placeholder="••••••••" />
+            <div class="input-group">
+              <input
+                v-model="password"
+                :type="showPassword ? 'text' : 'password'"
+                class="form-control"
+                id="password"
+                required
+                autocomplete="current-password"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                :aria-pressed="showPassword"
+                @click="showPassword = !showPassword"
+              >
+                <i class="fa-solid" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'" aria-hidden="true" />
+              </button>
+            </div>
           </div>
           <button type="submit" class="btn btn-primary w-100" :disabled="adminAuth.loading">Entrar</button>
           <router-link to="/" class="btn btn-link w-100 d-block text-center mt-2">Volver a la página principal</router-link>
@@ -36,6 +55,7 @@ const router = useRouter();
 const adminAuth = useAdminAuthStore();
 const email = ref('');
 const password = ref('');
+const showPassword = ref(false);
 
 async function submit() {
   adminAuth.error = null;

@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import Navbar from '@/components/Navbar.vue';
 import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { useRoute } from 'vue-router';
@@ -101,9 +101,14 @@ const route = useRoute();
 const productsStore = useProductsStore();
 const adminAuth = useAdminAuthStore();
 
+function queryParamSingle(v: unknown): string {
+  if (v == null) return '';
+  return Array.isArray(v) ? String(v[0] ?? '') : String(v);
+}
+
 const selectedCategory = ref<string | null>(null);
 
-const searchTerm = computed(() => (route.query.q as string) || '');
+const searchTerm = computed(() => queryParamSingle(route.query.q).trim());
 
 const categoryNames = computed(() => Object.keys(productsByCategory.value));
 
@@ -118,6 +123,24 @@ const totalProducts = computed(() => productsStore.items.length);
 
 const hasCategories = computed(() => categoryNames.value.length > 0 && Object.keys(productsByCategory.value).length > 0);
 
+/** Misma vista `/categorias`: al cambiar `?q=` (o el buscador actualiza la URL) hay que volver a cargar. */
+async function loadCategoriasData() {
+  const q = queryParamSingle(route.query.q).trim();
+  if (q) {
+    await productsStore.search(q);
+  } else {
+    await productsStore.fetchActive();
+  }
+}
+
+watch(
+  () => queryParamSingle(route.query.q),
+  () => {
+    void loadCategoriasData();
+  },
+  { immediate: true }
+);
+
 watch(
   () => route.query.cat,
   (cat) => {
@@ -125,16 +148,6 @@ watch(
   },
   { immediate: true }
 );
-
-onMounted(async () => {
-  if (searchTerm.value) {
-    await productsStore.search(searchTerm.value);
-  } else {
-    await productsStore.fetchActive();
-  }
-  const cat = route.query.cat as string;
-  if (cat) selectedCategory.value = cat;
-});
 </script>
 
 <style scoped>
