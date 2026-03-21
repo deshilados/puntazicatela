@@ -99,14 +99,7 @@
         <h3 class="display-5 fw-normal mb-4">Productos Relacionados</h3>
         <div class="row g-4">
           <div v-for="r in related" :key="r.id" class="col-md-6 col-lg-3">
-            <div class="card shadow-sm h-100" style="cursor: pointer" @click="$router.push('/producto/' + r.id)">
-              <img :src="productImageUrl(firstImageFrom(r.imagen_url))" :alt="r.nombre" class="card-img-top" style="height: 320px; object-fit: cover" />
-              <div class="card-body">
-                <span class="small text-uppercase text-muted d-block mb-2">{{ r.categoria }}</span>
-                <h3 class="h5 mb-2">{{ r.nombre }}</h3>
-                <p class="fw-semibold text-success mb-0">${{ Number(r.precio).toFixed(2) }} MXN</p>
-              </div>
-            </div>
+            <ProductCard :product="r" />
           </div>
         </div>
       </div>
@@ -117,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import Navbar from '@/components/Navbar.vue';
 import ContactoFooter from '@/components/sections/ContactoFooter.vue';
@@ -125,6 +118,7 @@ import { useProductsStore } from '@/stores/productsStore';
 import type { Product } from '@/stores/productsStore';
 import { productImageUrl } from '@/utils/productImageUrl';
 import SkeletonProductDetail from '@/components/SkeletonProductDetail.vue';
+import ProductCard from '@/components/ProductCard.vue';
 
 const route = useRoute();
 const productsStore = useProductsStore();
@@ -156,10 +150,6 @@ function parseImages(imagenUrl: string | null | undefined): string[] {
 const productImages = computed(() => parseImages(product.value?.imagen_url));
 const activeImageIndex = ref(0);
 const activeImageUrl = computed(() => productImages.value[activeImageIndex.value] ?? '');
-
-function firstImageFrom(imagenUrl: string | null | undefined): string | null {
-  return parseImages(imagenUrl)[0] ?? null;
-}
 
 function parseTallas(tallasValue: string | null | undefined): string[] {
   const raw = (tallasValue ?? '').trim();
@@ -194,27 +184,50 @@ const tallas = computed(() => {
 
 const related = ref<Product[]>([]);
 
-onMounted(async () => {
+/** Misma vista `/producto/:id`: Vue reutiliza el componente; hay que recargar al cambiar el id. */
+async function loadProductData() {
   const id = Number(route.params.id);
   if (!id) {
+    product.value = null;
+    related.value = [];
     loading.value = false;
     return;
   }
-  product.value = await productsStore.fetchById(id);
-  if (product.value && !product.value.activo) {
-    product.value = null;
-  } else if (product.value) {
-    const { supabase } = await import('@/utils/supabase');
-    const { data } = await supabase
-      .from('products')
-      .select('*')
-      .eq('categoria', product.value.categoria)
-      .eq('activo', true)
-      .neq('id', id)
-      .limit(4);
-    related.value = (data ?? []) as Product[];
+
+  loading.value = true;
+  product.value = null;
+  related.value = [];
+  activeImageIndex.value = 0;
+
+  try {
+    const p = await productsStore.fetchById(id);
+    if (p && !p.activo) {
+      product.value = null;
+    } else {
+      product.value = p;
+      if (product.value) {
+        const { supabase } = await import('@/utils/supabase');
+        const { data } = await supabase
+          .from('products')
+          .select('*')
+          .eq('categoria', product.value.categoria)
+          .eq('activo', true)
+          .neq('id', id)
+          .limit(4);
+        related.value = (data ?? []) as Product[];
+      }
+    }
+  } finally {
+    loading.value = false;
   }
-  loading.value = false;
-});
+}
+
+watch(
+  () => route.params.id,
+  () => {
+    void loadProductData();
+  },
+  { immediate: true },
+);
 </script>
 

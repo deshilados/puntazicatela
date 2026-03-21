@@ -25,6 +25,8 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // Por defecto Workbox limita a 2 MiB; los banners en public/images superan eso.
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [
           {

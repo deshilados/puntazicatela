@@ -14,8 +14,13 @@
               class="btn btn-link text-white-50 me-2" target="_blank" rel="noopener">
               <i class="bi bi-instagram"></i> Instagram
             </a>
-            <a v-if="content.footer.social.whatsapp" :href="content.footer.social.whatsapp"
-              class="btn btn-link text-white-50 me-2" target="_blank" rel="noopener">
+            <a
+              v-if="hasWhatsApp"
+              href="#"
+              class="btn btn-link text-white-50 me-2"
+              rel="noopener noreferrer"
+              @click.prevent="openWhatsApp"
+            >
               <i class="bi bi-whatsapp"></i> WhatsApp
             </a>
           </div>
@@ -84,15 +89,30 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useSiteContentStore } from '@/stores/siteContentStore';
+import {
+  useSiteContentStore,
+  buildWhatsAppChatUrl,
+  buildWhatsAppFooterMessage,
+  normalizeWhatsAppNumber,
+} from '@/stores/siteContentStore';
 
 const siteContent = useSiteContentStore();
 
 const content = computed(() => siteContent.getNestedStructured());
 
+const whatsappDigits = computed(() => normalizeWhatsAppNumber(content.value.footer.social.whatsapp));
+
+const hasWhatsApp = computed(() => whatsappDigits.value.length > 0);
+
+function openWhatsApp() {
+  const msg = buildWhatsAppFooterMessage(content.value.meta.site.name);
+  const url = buildWhatsAppChatUrl(whatsappDigits.value, msg);
+  if (url) window.open(url, '_blank', 'noopener,noreferrer');
+}
+
 const hasSocial = computed(() => {
   const s = content.value.footer.social;
-  return !!(s.facebook || s.instagram || s.whatsapp);
+  return !!(s.facebook || s.instagram || hasWhatsApp.value);
 });
 
 const hasSchedule = computed(() => {

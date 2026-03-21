@@ -16,12 +16,11 @@
         <form @submit.prevent="submit">
           <ul class="nav nav-pills panel-tabs mb-4" role="tablist">
             <li class="nav-item">
-              <button type="button" class="nav-link" :class="{ active: tab === 'meta' }" @click="tab = 'meta'">Meta /
-                SEO</button>
+              <button type="button" class="nav-link" :class="{ active: tab === 'encabezado' }"
+                @click="tab = 'encabezado'">Encabezado</button>
             </li>
             <li class="nav-item">
-              <button type="button" class="nav-link" :class="{ active: tab === 'encabezado' }"
-                @click="tab = 'encabezado'">Encabezado y home</button>
+              <button type="button" class="nav-link" :class="{ active: tab === 'portada' }" @click="tab = 'portada'">Portada</button>
             </li>
             <li class="nav-item">
               <button type="button" class="nav-link" :class="{ active: tab === 'nosotros' }"
@@ -31,42 +30,27 @@
               <button type="button" class="nav-link" :class="{ active: tab === 'footer' }" @click="tab = 'footer'">Pie
                 de página</button>
             </li>
+            <li class="nav-item">
+              <button type="button" class="nav-link" :class="{ active: tab === 'meta' }" @click="tab = 'meta'">Meta /
+                SEO</button>
+            </li>
           </ul>
 
-          <div v-show="tab === 'meta'" class="tab-pane panel-section">
-            <h2 class="h6 text-uppercase text-muted mb-3">Meta / SEO</h2>
-            <div class="mb-3">
-              <label class="form-label">Nombre del sitio</label>
-              <input v-model="form.meta_site_name" type="text" class="form-control" />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Ruta del icono (ej: site/icon.png)</label>
-              <input v-model="form.meta_site_icon" type="text" class="form-control" placeholder="site/icon.png" />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Descripción (SEO)</label>
-              <textarea v-model="form.meta_site_description" class="form-control" rows="2"></textarea>
-            </div>
-            <div class="mb-0">
-              <label class="form-label">Ubicación</label>
-              <input v-model="form.meta_site_location" type="text" class="form-control" />
-            </div>
-          </div>
-
           <div v-show="tab === 'encabezado'" class="tab-pane panel-section">
-            <h2 class="h6 text-uppercase text-muted mb-3">Encabezado y home</h2>
+            <h2 class="h6 text-uppercase text-muted mb-3">Encabezado (navbar)</h2>
             <div class="mb-3">
               <label class="form-label">Marca (navbar)</label>
               <input v-model="form.navbar_brand" type="text" class="form-control" />
             </div>
-            <div class="mb-3">
-              <label class="form-label">Ruta logo navbar (ej: site/logo-navbar.png)</label>
+            <div class="mb-0 pt-3 border-top">
+              <label class="form-label">Ruta logotipo navbar</label>
+              <PathFieldNote />
               <input v-model="form.navbar_logo" type="text" class="form-control" />
             </div>
-            <div class="mb-3">
-              <label class="form-label">Ruta banner hero (ej: site/banner.jpg)</label>
-              <input v-model="form.home_hero_image" type="text" class="form-control" />
-            </div>
+          </div>
+
+          <div v-show="tab === 'portada'" class="tab-pane panel-section">
+            <h2 class="h6 text-uppercase text-muted mb-3">Portada</h2>
             <div class="mb-3">
               <label class="form-label">Lugar hero</label>
               <input v-model="form.home_hero_location" type="text" class="form-control" />
@@ -87,18 +71,19 @@
               <label class="form-label">Descripción colección</label>
               <textarea v-model="form.home_collection_description" class="form-control" rows="2"></textarea>
             </div>
-            <div class="mb-0">
+            <div class="mb-3">
               <label class="form-label">Mensaje cuando no hay productos</label>
               <input v-model="form.home_collection_no_products" type="text" class="form-control" />
+            </div>
+            <div class="mb-0 pt-3 border-top">
+              <label class="form-label">Ruta imagen banner</label>
+              <PathFieldNote />
+              <input v-model="form.home_hero_image" type="text" class="form-control" />
             </div>
           </div>
 
           <div v-show="tab === 'nosotros'" class="tab-pane panel-section">
             <h2 class="h6 text-uppercase text-muted mb-3">Sección nosotros</h2>
-            <div class="mb-3">
-              <label class="form-label">Ruta imagen nosotros (ej: site/about.jpg)</label>
-              <input v-model="form.home_about_image" type="text" class="form-control" />
-            </div>
             <div class="mb-3">
               <label class="form-label">Badge (ej: Nuestra Historia)</label>
               <input v-model="form.home_about_badge" type="text" class="form-control" />
@@ -140,6 +125,11 @@
                 <label class="form-label">Stat 3 etiqueta</label>
                 <input v-model="form.home_about_stats_products_label" type="text" class="form-control" />
               </div>
+            </div>
+            <div class="mb-0 pt-3 border-top">
+              <label class="form-label">Ruta imagen nosotros</label>
+              <PathFieldNote />
+              <input v-model="form.home_about_image" type="text" class="form-control" />
             </div>
           </div>
 
@@ -207,9 +197,15 @@
                 <input v-model="form.footer_social_instagram" type="url" class="form-control" />
               </div>
               <div class="col-md-4 mb-3">
-                <label class="form-label">WhatsApp (número o URL wa.me/...)</label>
-                <input v-model="form.footer_social_whatsapp" type="text" class="form-control"
-                  placeholder="529541817823 o https://wa.me/..." />
+                <label class="form-label">WhatsApp</label>
+                <input
+                  v-model="form.footer_social_whatsapp"
+                  type="text"
+                  class="form-control"
+                  inputmode="numeric"
+                  autocomplete="tel"
+                  placeholder="529541817823"
+                />
               </div>
             </div>
             <div class="mb-3">
@@ -219,6 +215,27 @@
             <div class="mb-0">
               <label class="form-label">Hecho con / mensaje final</label>
               <input v-model="form.footer_copyright_made_with" type="text" class="form-control" />
+            </div>
+          </div>
+
+          <div v-show="tab === 'meta'" class="tab-pane panel-section">
+            <h2 class="h6 text-uppercase text-muted mb-3">Meta / SEO</h2>
+            <div class="mb-3">
+              <label class="form-label">Nombre del sitio</label>
+              <input v-model="form.meta_site_name" type="text" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Descripción (SEO)</label>
+              <textarea v-model="form.meta_site_description" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Ubicación</label>
+              <input v-model="form.meta_site_location" type="text" class="form-control" />
+            </div>
+            <div class="mb-0 pt-3 border-top">
+              <label class="form-label">Ruta del icono (ej: site/icon.png)</label>
+              <PathFieldNote />
+              <input v-model="form.meta_site_icon" type="text" class="form-control" placeholder="site/icon.png" />
             </div>
           </div>
 
@@ -238,13 +255,14 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import Navbar from '@/components/Navbar.vue';
+import PathFieldNote from '@/components/PathFieldNote.vue';
 import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { useSiteContentStore } from '@/stores/siteContentStore';
-import { numberToWhatsAppUrl } from '@/stores/siteContentStore';
+import { normalizeWhatsAppNumber } from '@/stores/siteContentStore';
 import Swal from 'sweetalert2';
 
 const siteContent = useSiteContentStore();
-const tab = ref<'meta' | 'encabezado' | 'nosotros' | 'footer'>('meta');
+const tab = ref<'meta' | 'encabezado' | 'portada' | 'nosotros' | 'footer'>('encabezado');
 
 const form = reactive<Record<string, string>>({
   meta_site_name: '',
@@ -295,9 +313,8 @@ onMounted(async () => {
   Object.keys(form).forEach((key) => {
     form[key] = siteContent.get(key);
   });
-  const wa = form.footer_social_whatsapp;
-  if (wa && !wa.startsWith('http')) {
-    form.footer_social_whatsapp = numberToWhatsAppUrl(wa);
+  if (form.footer_social_whatsapp) {
+    form.footer_social_whatsapp = normalizeWhatsAppNumber(form.footer_social_whatsapp);
   }
 });
 
@@ -311,9 +328,8 @@ async function submit() {
     },
   });
 
-  let wa = form.footer_social_whatsapp;
-  if (wa && !wa.startsWith('http')) {
-    form.footer_social_whatsapp = numberToWhatsAppUrl(wa);
+  if (form.footer_social_whatsapp) {
+    form.footer_social_whatsapp = normalizeWhatsAppNumber(form.footer_social_whatsapp);
   }
   try {
     await siteContent.setBulk({ ...form });

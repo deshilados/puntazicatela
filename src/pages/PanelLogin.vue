@@ -58,7 +58,7 @@ async function submit() {
       timer: 1400,
       showConfirmButton: false,
     });
-    router.push('/panel');
+    router.push('/');
   } else {
     await Swal.fire({
       icon: 'error',

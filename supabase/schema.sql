@@ -84,7 +84,7 @@ INSERT INTO public.site_content ("key", value) VALUES
 ('footer_schedule_title', 'Horario'),
 ('footer_schedule_days', 'Fines de semana'),
 ('footer_schedule_hours', '10:00 AM - 7:00 PM'),
-('footer_social_whatsapp', 'https://wa.me/529541817823?text=Hola,%20me%20interesa%20información%20sobre%20sus%20productos'),
+('footer_social_whatsapp', '529541817823'),
 ('footer_copyright_text', 'Deshilados PXM. Todos los derechos reservados.'),
 ('footer_copyright_made_with', 'Hecho con amor en Puerto Escondido, Oaxaca'),
 ('meta_site_name', 'Deshilados PXM'),

@@ -102,7 +102,7 @@ import Navbar from '@/components/Navbar.vue';
 import ContactoFooter from '@/components/sections/ContactoFooter.vue';
 import { useProductsStore } from '@/stores/productsStore';
 import { useSiteContentStore } from '@/stores/siteContentStore';
-import { numberToWhatsAppUrl } from '@/stores/siteContentStore';
+import { buildWhatsAppChatUrl, normalizeWhatsAppNumber, resolveSiteNameForWhatsApp } from '@/stores/siteContentStore';
 import { productImageUrl } from '@/utils/productImageUrl';
 import type { Product } from '@/stores/productsStore';
 
@@ -177,17 +177,38 @@ onMounted(async () => {
   }
 });
 
+const WHATSAPP_FALLBACK = '529541817823';
+
+function buildOrderWhatsAppBody(siteNameFromMeta: string): string {
+  const brand = resolveSiteNameForWhatsApp(siteNameFromMeta);
+  const productId = form.value.productId;
+  const product = allProducts.value.find((p) => p.id === Number(productId));
+  const productInfo = product ? `${product.nombre} ($${Number(product.precio).toFixed(2)} MXN)` : 'Producto personalizado';
+  const size = form.value.size?.trim() || '—';
+  const address = form.value.address?.trim() || '—';
+  const notes = form.value.message?.trim() || '—';
+  return [
+    `🛍️ *Nuevo pedido — ${brand}*`,
+    '',
+    `👤 *Nombre:* ${form.value.name.trim()}`,
+    `📦 *Producto:* ${productInfo}`,
+    `📏 *Talla:* ${size}`,
+    `📍 *Dirección:* ${address}`,
+    `📝 *Notas:* ${notes}`,
+    '',
+    '────────────────────',
+    `_Enviado desde el formulario de pedidos · ${brand}_`,
+  ].join('\n');
+}
+
 function submitOrder() {
   const siteContent = useSiteContentStore();
   const content = siteContent.getNestedStructured();
-  const wa = content.footer.social.whatsapp;
-  const productId = form.value.productId;
-  const product = allProducts.value.find((p) => p.id === Number(productId));
-  const productInfo = product ? `${product.nombre} ($${Number(product.precio).toFixed(2)})` : 'Producto personalizado';
-  const text = `Hola, me interesa hacer un pedido.\n\nNombre: ${form.value.name}\nProducto: ${productInfo}\nTalla: ${form.value.size || '-'}\nDirección: ${form.value.address || '-'}\nMensaje: ${form.value.message || '-'}`;
-  const waUrl = wa || numberToWhatsAppUrl('529541817823');
-  const url = waUrl.replace(/\/$/, '') + '?text=' + encodeURIComponent(text);
-  window.open(url, '_blank');
+  const raw = content.footer.social.whatsapp;
+  const digits = normalizeWhatsAppNumber(raw) || WHATSAPP_FALLBACK;
+  const text = buildOrderWhatsAppBody(content.meta.site.name);
+  const url = buildWhatsAppChatUrl(digits, text);
+  if (url) window.open(url, '_blank', 'noopener,noreferrer');
 }
 </script>
 

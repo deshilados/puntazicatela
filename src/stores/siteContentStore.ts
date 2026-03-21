@@ -120,14 +120,69 @@ export const useSiteContentStore = defineStore('siteContent', {
   }
 });
 
+/** Extrae solo dígitos desde URL wa.me, api.whatsapp.com o texto con número. */
 export function whatsappUrlToNumber(url: string): string {
   if (!url || typeof url !== 'string') return '';
-  const m = url.match(/wa\.me\/([0-9]+)/);
-  return m ? m[1] : url;
+  const t = url.trim();
+  const waMe = t.match(/wa\.me\/([0-9]+)/i);
+  if (waMe) return waMe[1];
+  const phoneParam = t.match(/[?&]phone=([0-9]+)/i);
+  if (phoneParam) return phoneParam[1];
+  return t.replace(/\D/g, '');
 }
 
-export function numberToWhatsAppUrl(number: string): string {
-  const n = (number || '').replace(/\D/g, '');
+/**
+ * Normaliza el valor guardado en BD: siempre solo dígitos (ej. 529541817823).
+ * Acepta números con espacios/+ o URLs antiguas para migración.
+ */
+export function normalizeWhatsAppNumber(input: string): string {
+  if (!input || typeof input !== 'string') return '';
+  const t = input.trim();
+  if (/^https?:\/\//i.test(t)) {
+    return whatsappUrlToNumber(t);
+  }
+  return t.replace(/\D/g, '');
+}
+
+/** Construye la URL de chat solo al usar (clic); no guardar esto en BD. */
+export function buildWhatsAppChatUrl(phoneDigits: string, message?: string): string {
+  const n = normalizeWhatsAppNumber(phoneDigits);
   if (!n) return '';
-  return `https://wa.me/${n}?text=Hola,%20me%20interesa%20información%20sobre%20sus%20productos`;
+  if (message != null && message.trim() !== '') {
+    return `https://wa.me/${n}?text=${encodeURIComponent(message.trim())}`;
+  }
+  return `https://wa.me/${n}`;
+}
+
+const DEFAULT_SITE_NAME = 'Deshilados PXM';
+
+/** Evita que * en el nombre del sitio rompa el formato de negritas en WhatsApp. */
+export function sanitizeWhatsAppSegment(text: string): string {
+  return (text ?? '').replace(/\*/g, '').trim();
+}
+
+/** Usa el nombre del sitio (Meta / SEO → meta_site_name) o un valor por defecto. */
+export function resolveSiteNameForWhatsApp(metaSiteName: string | undefined | null): string {
+  const t = sanitizeWhatsAppSegment(metaSiteName ?? '');
+  return t || DEFAULT_SITE_NAME;
+}
+
+/** Mensaje al abrir WhatsApp desde el pie de página; usa el nombre configurado en Meta / SEO. */
+export function buildWhatsAppFooterMessage(siteNameFromMeta: string | undefined | null): string {
+  const brand = resolveSiteNameForWhatsApp(siteNameFromMeta);
+  return [
+    'Hola 👋',
+    '',
+    `Me gustaría recibir más información sobre *${brand}* y sus productos artesanales.`,
+    '',
+    '_Consulta enviada desde el sitio web_',
+  ].join('\n');
+}
+
+/**
+ * @deprecated Usar `buildWhatsAppChatUrl(normalizeWhatsAppNumber(n), mensaje)`;
+ * se mantiene por compatibilidad con código que esperaba URL con texto fijo.
+ */
+export function numberToWhatsAppUrl(number: string): string {
+  return buildWhatsAppChatUrl(number, 'Hola, me interesa información sobre sus productos.');
 }
