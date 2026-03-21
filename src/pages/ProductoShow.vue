@@ -2,10 +2,10 @@
   <Navbar />
 
   <div>
-    <div v-if="loading" class="container py-5">
+    <div v-if="loading" class="container pt-5">
       <SkeletonProductDetail />
     </div>
-    <div v-else-if="!product" class="container text-center py-5">
+    <div v-else-if="!product" class="container text-center pt-5">
       <p class="text-danger">Producto no encontrado.</p>
       <router-link to="/" class="btn btn-success">Ir al inicio</router-link>
     </div>

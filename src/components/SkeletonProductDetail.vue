@@ -1,5 +1,5 @@
 <template>
-  <div class="row g-5 mb-5">
+  <div class="row mb-5">
     <div class="col-lg-6">
       <div class="rounded shadow overflow-hidden bg-white placeholder-glow">
         <div class="card-img-top bg-light" style="height: 500px">
