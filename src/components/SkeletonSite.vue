@@ -2,7 +2,7 @@
   <div class="skeleton-site">
     <!-- Skeleton del navbar fijo -->
     <nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top placeholder-glow" aria-label="Cargando sitio">
-      <div class="container-fluid align-items-center">
+      <div class="container align-items-center">
         <div class="navbar-brand d-flex align-items-center gap-2">
           <span class="placeholder rounded" style="width: 36px; height: 36px;"></span>
           <span class="placeholder rounded" style="width: 190px; height: 20px;"></span>
