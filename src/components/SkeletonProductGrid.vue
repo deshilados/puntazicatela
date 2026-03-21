@@ -1,6 +1,6 @@
 <template>
   <div class="row g-4">
-    <div v-for="n in count" :key="n" class="col-md-6 col-lg-4">
+    <div v-for="n in count" :key="n" class="col-md-6 col-lg-3">
       <div class="card shadow-sm h-100 placeholder-glow">
         <div class="card-img-top bg-light" style="height: 320px">
           <div class="placeholder col-12" style="height: 100%"></div>

@@ -2,7 +2,7 @@
   <div class="card shadow-sm h-100 position-relative" style="cursor: pointer" @click="go">
     <div class="position-relative">
       <img :src="productImageUrl(firstImageFrom(product.imagen_url))" :alt="product.nombre" class="card-img-top"
-        style="height: 320px; object-fit: cover" loading="lazy" />
+        style="height: 100%; object-fit: cover" loading="lazy" />
 
       <div v-if="adminAuth.isAdmin" class="position-absolute top-0 end-0 p-2 d-flex gap-2" style="z-index: 3">
         <router-link

@@ -23,7 +23,7 @@
       </div>
 
       <div v-if="productsStore.items.length" class="row g-4">
-        <div v-for="p in productsStore.items" :key="p.id" class="col-md-6 col-lg-4">
+        <div v-for="p in productsStore.items" :key="p.id" class="col-md-6 col-lg-3">
           <ProductCard :product="p" />
         </div>
       </div>

@@ -73,17 +73,21 @@
           </li>
 
           <li v-else-if="canShowLogin" class="nav-item">
-            <router-link class="nav-link" to="/panel/login" :class="{ active: route.path === '/panel/login' }"
+            <router-link class="nav-link text-nowrap" to="/panel/login" :class="{ active: route.path === '/panel/login' }"
               :aria-current="route.path === '/panel/login' ? 'page' : undefined" @click="closeMenu">
               Iniciar sesión
             </router-link>
           </li>
         </ul>
 
-        <form class="d-flex" role="search" @submit.prevent="onSearch">
-          <input v-model="searchQuery" class="form-control me-2" type="search"
-            placeholder="Buscar productos, categorías y más..." aria-label="Buscar productos" />
-          <button class="btn btn-outline-primary" type="submit" aria-label="Buscar">
+        <form
+          class="d-flex w-100 w-lg-auto min-w-0 navbar-search-form"
+          role="search"
+          @submit.prevent="onSearch"
+        >
+          <input v-model="searchQuery" class="form-control me-2 flex-grow-1 min-w-0 navbar-search-input" type="search"
+            placeholder="Buscar" aria-label="Buscar productos" />
+          <button class="btn btn-outline-primary flex-shrink-0" type="submit" aria-label="Buscar">
             <i class="fa-solid fa-magnifying-glass" aria-hidden="true" />
           </button>
         </form>
@@ -273,9 +277,12 @@ async function handleNavClick(id: string) {
   border: 1px solid rgba(11, 45, 77, 0.14);
 }
 
+/* min-width del buscador solo en desktop — en móvil 360px rompía el ancho (flex + min-width) */
 .navbar .form-control.me-2 {
   height: 44px;
-  min-width: 260px;
+  font-size: 1rem;
+  padding-top: 0.55rem;
+  padding-bottom: 0.55rem;
 }
 
 .navbar .navbar-toggler {
@@ -291,10 +298,36 @@ async function handleNavClick(id: string) {
   object-fit: contain;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 991.98px) {
+  .navbar .navbar-collapse {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
   .navbar .form-control.me-2 {
     min-width: 0;
+  }
+
+  /* Dropdown Administración: opciones debajo del botón, no al lado (evita flex en .nav-item) */
+  .navbar .navbar-nav .nav-item.dropdown {
+    flex-direction: column;
+    align-items: stretch;
     width: 100%;
+  }
+
+  .navbar .navbar-nav .nav-item.dropdown .dropdown-toggle {
+    width: 100%;
+    justify-content: space-between;
+    text-align: left;
+  }
+
+  .navbar .navbar-nav .nav-item.dropdown .dropdown-menu {
+    position: static !important;
+    transform: none !important;
+    inset: auto !important;
+    margin: 0.25rem 0 0 !important;
+    width: 100%;
+    float: none;
   }
 }
 
@@ -318,18 +351,18 @@ async function handleNavClick(id: string) {
   line-height: 44px;
 }
 
-/* Buscador: hacerlo legible en desktop */
-.navbar .form-control.me-2 {
-  height: 44px;
-  min-width: 360px;
-  font-size: 1rem;
-  padding-top: 0.55rem;
-  padding-bottom: 0.55rem;
-}
+/* Desktop: buscador compacto (antes w-100 + flex-grow ocupaba ~1/3 y apretaba “Iniciar sesión”) */
+@media (min-width: 992px) {
+  .navbar .navbar-search-form {
+    width: auto !important;
+    max-width: min(300px, 28vw);
+    flex: 0 0 auto;
+    margin-left: 0.75rem;
+  }
 
-@media (max-width: 1200px) and (min-width: 993px) {
-  .navbar .form-control.me-2 {
-    min-width: 260px;
+  .navbar .navbar-search-input.form-control.me-2 {
+    min-width: 0;
+    flex: 1 1 auto;
   }
 }
 </style>

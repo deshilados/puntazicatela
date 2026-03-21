@@ -1,6 +1,5 @@
 <template>
   <Navbar />
-
   <div>
     <div v-if="loading" class="container pt-5">
       <SkeletonProductDetail />
@@ -13,11 +12,11 @@
       <ProductoShowBreadcrumb :product="product" />
 
       <div class="row mb-5">
-        <div class="col-lg-6">
+        <div class="col-lg-5">
           <ProductoShowGallery v-model:active-index="activeImageIndex" :product-name="product.nombre"
             :imagen-url="product.imagen_url" :images="productImages" />
         </div>
-        <div class="col-lg-6">
+        <div class="col-lg-5">
           <ProductoShowDetail :product="product" :tallas="tallas" />
         </div>
       </div>

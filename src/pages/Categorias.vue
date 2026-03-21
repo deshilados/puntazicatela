@@ -57,7 +57,7 @@
       <template v-else-if="hasCategories">
         <template v-if="searchTerm">
           <div class="row g-4 mb-5">
-            <div v-for="p in flatProducts" :key="p.id" class="col-md-6 col-lg-4">
+            <div v-for="p in flatProducts" :key="p.id" class="col-md-6 col-lg-3">
               <ProductCard :product="p" />
             </div>
           </div>
@@ -67,7 +67,7 @@
             <div v-for="(prods, cat) in productsByCategory" :key="cat" class="pb-4">
               <h3 class="display-5 fw-normal mb-4 pb-2">{{ cat }}</h3>
               <div class="row g-4">
-                <div v-for="p in prods" :key="p.id" class="col-md-6 col-lg-4">
+                <div v-for="p in prods" :key="p.id" class="col-md-6 col-lg-3">
                   <ProductCard :product="p" />
                 </div>
               </div>
@@ -75,7 +75,7 @@
           </div>
           <div v-for="(prods, cat) in productsByCategory" :key="'tab-' + cat" v-show="selectedCategory === cat"
             class="row g-4 mb-5">
-            <div v-for="p in prods" :key="p.id" class="col-md-6 col-lg-4">
+            <div v-for="p in prods" :key="p.id" class="col-md-6 col-lg-3">
               <ProductCard :product="p" />
             </div>
           </div>
