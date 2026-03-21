@@ -30,10 +30,15 @@
               Nosotros
             </button>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <button class="nav-link" type="button" @click="handleNavClick('contacto')">
               Contacto
             </button>
+          </li> -->
+          <li class="nav-item">
+            <router-link to="/categorias" class="nav-link">
+              Categorías
+            </router-link>
           </li>
 
           <li class="nav-item">
@@ -73,18 +78,15 @@
           </li>
 
           <li v-else-if="canShowLogin" class="nav-item">
-            <router-link class="nav-link text-nowrap" to="/panel/login" :class="{ active: route.path === '/panel/login' }"
+            <router-link class="nav-link text-nowrap" to="/panel/login"
+              :class="{ active: route.path === '/panel/login' }"
               :aria-current="route.path === '/panel/login' ? 'page' : undefined" @click="closeMenu">
               Iniciar sesión
             </router-link>
           </li>
         </ul>
 
-        <form
-          class="d-flex w-100 w-lg-auto min-w-0 navbar-search-form"
-          role="search"
-          @submit.prevent="onSearch"
-        >
+        <form class="d-flex w-100 w-lg-auto min-w-0 navbar-search-form" role="search" @submit.prevent="onSearch">
           <input v-model="searchQuery" class="form-control me-2 flex-grow-1 min-w-0 navbar-search-input" type="search"
             placeholder="Buscar" aria-label="Buscar productos" />
           <button class="btn btn-outline-primary flex-shrink-0" type="submit" aria-label="Buscar">
@@ -335,7 +337,8 @@ async function handleNavClick(id: string) {
 .navbar .navbar-brand {
   display: flex;
   align-items: center;
-  height: 56px; /* consistente con el padding vertical del navbar */
+  height: 56px;
+  /* consistente con el padding vertical del navbar */
   padding-top: 0;
   padding-bottom: 0;
   line-height: 1;
