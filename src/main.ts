@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import App from "@/App.vue";
 import router from "@/router";
 import { createPinia } from "pinia";
+import { useCartStore } from "@/stores/cartStore";
 import PrimeVue from "primevue/config";
 import Aura from "@primevue/themes/aura";
 
@@ -16,6 +17,7 @@ const app = createApp(App);
 const pinia = createPinia();
 
 app.use(pinia);
+useCartStore().hydrateFromStorage();
 app.use(router);
 app.use(PrimeVue, {
   theme: {

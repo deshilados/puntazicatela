@@ -41,10 +41,22 @@
             </router-link>
           </li>
 
-          <li class="nav-item">
-            <router-link class="nav-link" to="/ordenar" :class="{ active: isOrdenarActive }"
-              :aria-current="isOrdenarActive ? 'page' : undefined" @click="closeMenu">
+          <!-- <li class="nav-item">
+            <router-link class="nav-link" to="/ordenar" :class="{ active: route.path === '/ordenar' }"
+              :aria-current="route.path === '/ordenar' ? 'page' : undefined" @click="closeMenu">
               Ordenar
+            </router-link>
+          </li> -->
+          <li class="nav-item">
+            <router-link
+              class="nav-link position-relative d-inline-flex align-items-center gap-1"
+              to="/ordenar"
+              title="Carrito"
+              :aria-label="cartTotalItems ? `Carrito, ${cartTotalItems} artículos` : 'Carrito'"
+              @click="closeMenu"
+            >
+              <i class="bi bi-cart3" aria-hidden="true" />Carrito
+              <span v-if="cartTotalItems" class="badge rounded-pill bg-success cart-nav-badge">{{ cartTotalItems }}</span>
             </router-link>
           </li>
 
@@ -103,11 +115,15 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
 import { useAdminAuthStore } from '@/stores/adminAuthStore';
 import { useSiteContentStore } from '@/stores/siteContentStore';
+import { useCartStore } from '@/stores/cartStore';
 
 const router = useRouter();
 const route = useRoute();
 const adminAuth = useAdminAuthStore();
 const siteContent = useSiteContentStore();
+const cartStore = useCartStore();
+
+const cartTotalItems = computed(() => cartStore.totalItems);
 
 // El admin puede existir por sesión en sessionStorage, así que lo inicializamos pronto.
 adminAuth.initFromStorage();
@@ -127,7 +143,6 @@ const imageBase = computed(() => {
   return base.endsWith('/') ? base + 'images/' : base + '/images/';
 });
 
-const isOrdenarActive = computed(() => route.path === '/ordenar');
 const isProductosActive = computed(() => (
   adminAuth.isAdmin &&
   (route.path === '/panel' || route.path.startsWith('/panel/crear') || route.path.startsWith('/panel/editar'))
