@@ -1,5 +1,19 @@
 import { defineStore } from 'pinia';
 import { supabase } from '@/utils/supabase';
+import {
+  FALLBACK_NOTICE,
+  getFallbackActiveProducts,
+  getFallbackCategories,
+  getFallbackPortadaProducts,
+  getFallbackProductById,
+  loadFallbackProducts,
+  searchFallbackProducts,
+  type FallbackProduct
+} from '@/utils/supabaseFallback';
+
+function asProducts(list: FallbackProduct[]): Product[] {
+  return list as Product[];
+}
 
 function normalizeImageNameEntry(value: string): string {
   const raw = value.trim();
@@ -89,101 +103,120 @@ export const useProductsStore = defineStore('products', {
     async fetchActive() {
       this.loading = true;
       this.error = null;
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('activo', true)
-        .order('orden', { ascending: false, nullsFirst: false })
-        .order('id', { ascending: false });
-      if (error) {
-        this.error = error.message;
-        this.items = [];
-      } else {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('activo', true)
+          .order('orden', { ascending: false, nullsFirst: false })
+          .order('id', { ascending: false });
+        if (error) throw error;
         this.items = (data ?? []) as Product[];
+      } catch {
+        this.error = FALLBACK_NOTICE;
+        this.items = asProducts(getFallbackActiveProducts());
       }
       this.loading = false;
     },
     async fetchPortada() {
       this.loading = true;
       this.error = null;
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('activo', true)
-        .eq('portada', true)
-        .order('orden', { ascending: false })
-        .order('id', { ascending: false });
-      if (error) {
-        this.error = error.message;
-        this.items = [];
-      } else {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('activo', true)
+          .eq('portada', true)
+          .order('orden', { ascending: false })
+          .order('id', { ascending: false });
+        if (error) throw error;
         this.items = (data ?? []) as Product[];
+      } catch {
+        this.error = FALLBACK_NOTICE;
+        this.items = asProducts(getFallbackPortadaProducts());
       }
       this.loading = false;
     },
     async fetchAll() {
       this.loading = true;
       this.error = null;
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('orden', { ascending: false, nullsFirst: false })
-        .order('id', { ascending: false });
-      if (error) {
-        this.error = error.message;
-        this.all = [];
-      } else {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .order('orden', { ascending: false, nullsFirst: false })
+          .order('id', { ascending: false });
+        if (error) throw error;
         this.all = (data ?? []) as Product[];
+      } catch {
+        this.error = FALLBACK_NOTICE;
+        this.all = asProducts(loadFallbackProducts());
       }
       this.loading = false;
     },
     async fetchById(id: number) {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('id', id)
-        .single();
-      if (error) return null;
-      return data as Product;
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('id', id)
+          .single();
+        if (error) throw error;
+        return data as Product;
+      } catch {
+        const local = getFallbackProductById(id);
+        return local ? (local as Product) : null;
+      }
     },
     async search(term: string) {
       if (!term.trim()) return this.fetchActive();
       this.loading = true;
       this.error = null;
       const t = '%' + term.trim() + '%';
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('activo', true)
-        .or(`nombre.ilike.${t},descripcion.ilike.${t}`)
-        .order('orden', { ascending: false })
-        .order('id', { ascending: false });
-      if (error) {
-        this.error = error.message;
-        this.items = [];
-      } else {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('activo', true)
+          .or(`nombre.ilike.${t},descripcion.ilike.${t}`)
+          .order('orden', { ascending: false })
+          .order('id', { ascending: false });
+        if (error) throw error;
         this.items = (data ?? []) as Product[];
+      } catch {
+        this.error = FALLBACK_NOTICE;
+        this.items = asProducts(searchFallbackProducts(term));
       }
       this.loading = false;
     },
     async getCategories() {
-      const { data } = await supabase
-        .from('products')
-        .select('categoria')
-        .eq('activo', true);
-      const set = new Set<string>();
-      (data ?? []).forEach((r: { categoria: string }) => {
-        if (r.categoria) set.add(r.categoria);
-      });
-      return Array.from(set).sort();
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('categoria')
+          .eq('activo', true);
+        if (error) throw error;
+        const set = new Set<string>();
+        (data ?? []).forEach((r: { categoria: string }) => {
+          if (r.categoria) set.add(r.categoria);
+        });
+        return Array.from(set).sort();
+      } catch {
+        return getFallbackCategories(true);
+      }
     },
     async getCategoriesAll() {
-      const { data } = await supabase.from('products').select('categoria');
-      const set = new Set<string>();
-      (data ?? []).forEach((r: { categoria: string }) => {
-        if (r.categoria) set.add(r.categoria);
-      });
-      return Array.from(set).sort();
+      try {
+        const { data, error } = await supabase.from('products').select('categoria');
+        if (error) throw error;
+        const set = new Set<string>();
+        (data ?? []).forEach((r: { categoria: string }) => {
+          if (r.categoria) set.add(r.categoria);
+        });
+        return Array.from(set).sort();
+      } catch {
+        return getFallbackCategories(false);
+      }
     },
     groupByCategory(products: Product[]): Record<string, Product[]> {
       const g: Record<string, Product[]> = {};

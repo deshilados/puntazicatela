@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { supabase } from '@/utils/supabase';
+import { FALLBACK_NOTICE, loadFallbackSiteContent } from '@/utils/supabaseFallback';
 
 type FlatContent = Record<string, string | null>;
 
@@ -13,14 +14,19 @@ export const useSiteContentStore = defineStore('siteContent', {
     async fetchAll() {
       this.loading = true;
       this.error = null;
-      const { data, error } = await supabase.from('site_content').select('key, value');
-      if (error) {
-        this.error = error.message;
-        this.items = {};
-      } else {
+      try {
+        const { data, error } = await supabase.from('site_content').select('key, value');
+        if (error) throw error;
         const map: FlatContent = {};
         (data ?? []).forEach((r: { key: string; value: string | null }) => {
           map[r.key] = r.value;
+        });
+        this.items = map;
+      } catch {
+        this.error = FALLBACK_NOTICE;
+        const map: FlatContent = {};
+        loadFallbackSiteContent().forEach((r) => {
+          if (r.key) map[r.key] = r.value;
         });
         this.items = map;
       }

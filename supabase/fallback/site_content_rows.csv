@@ -1,0 +1,42 @@
+id,key,value,updated_at
+1,navbar_brand,Deshilados Punta Zicatela,2026-03-19 01:07:02.526164+00
+2,navbar_logo,logo-navbar.png,2026-03-19 01:07:02.526164+00
+3,footer_brand,PRENDAS TÍPICAS OAXAQUEÑAS,2026-03-19 01:07:02.526164+00
+4,footer_description,Prendas artesanales de la costa chica de Oaxaca.,2026-03-19 01:07:02.526164+00
+5,footer_contact_title,Contacto,2026-03-19 01:07:02.526164+00
+6,footer_contact_street,Punta Zicatela,2026-03-19 01:07:02.526164+00
+7,footer_contact_city,"Puerto Escondido, Oaxaca",2026-03-19 01:07:02.526164+00
+8,footer_contact_phone,+52 954 181 78 23,2026-03-19 01:07:02.526164+00
+9,footer_contact_email,deshiladospxm@outlook.com,2026-03-19 01:07:02.526164+00
+10,footer_schedule_title,Horario,2026-03-19 01:07:02.526164+00
+11,footer_schedule_days,Fines de semana,2026-03-19 01:07:02.526164+00
+12,footer_schedule_hours,10:00 AM - 7:00 PM,2026-03-19 01:07:02.526164+00
+13,footer_social_whatsapp,9541817823,2026-03-19 01:07:02.526164+00
+14,footer_copyright_text,Deshilados Punta Zicatela. Todos los derechos reservados.,2026-03-19 01:07:02.526164+00
+15,footer_copyright_made_with,"Hecho con amor en Puerto Escondido, Oaxaca",2026-03-19 01:07:02.526164+00
+16,meta_site_name,Deshilados Punta Zicatela,2026-03-19 01:07:02.526164+00
+17,meta_site_icon,icon.png,2026-03-19 01:07:02.526164+00
+18,meta_site_description,Descubre la belleza de la ropa típica oaxaqueña.,2026-03-19 01:07:02.526164+00
+19,home_hero_title,Deshilados Oaxaqueños,2026-03-19 01:07:02.526164+00
+20,home_hero_description,"Descubre la esencia de Oaxaca en cada hilo. Nuestras prendas están tejidas a mano por talentosas artesanas de la Costa Chica, quienes preservan técnicas ancestrales y las transforman en piezas contemporáneas llenas de identidad.",2026-03-19 01:07:02.526164+00
+21,home_hero_image,banner2.png,2026-03-19 01:07:02.526164+00
+22,home_collection_title,Prendas Artesanales,2026-03-19 01:07:02.526164+00
+23,home_about_title,Raíces que Visten,2026-03-19 01:07:02.526164+00
+24,home_about_image,banner3.png,2026-03-19 01:07:02.526164+00
+28,meta_site_location,"Punta Zicatela, Puerto Escondido, Oaxaca",2026-03-19 04:16:05.700398+00
+32,home_hero_location,Puerto Escondido,2026-03-19 04:16:05.700398+00
+36,home_collection_description,"Al elegir estas creaciones, no solo vistes moda, vistes raíces. Llevas contigo la riqueza cultural de la Costa Chica y el espíritu de las manos que dan vida a cada diseño.",2026-03-19 04:16:05.700398+00
+37,home_collection_no_products,Por el momento no tenemos productos disponibles,2026-03-19 04:16:05.700398+00
+39,home_about_badge,Nuestra Historia,2026-03-19 04:16:05.700398+00
+41,home_about_description1,"En Deshilados Punta Zicatela creemos que cada prenda artesanal es un puente entre pasado y presente. Nuestros tejidos nacen de manos oaxaqueñas que, con paciencia y creatividad, transforman técnicas ancestrales en piezas únicas que reflejan identidad, orgullo y tradición.",2026-03-19 04:16:05.700398+00
+42,home_about_description2,"Al vestir nuestras creaciones, llevas contigo la fuerza de la Costa Chica y el legado de generaciones que han mantenido vivo el arte textil. No es solo moda: es cultura, es historia, es Oaxaca en cada hilo.",2026-03-19 04:16:05.700398+00
+43,home_about_stats_years_value,100%,2026-03-19 04:16:05.700398+00
+44,home_about_stats_years_label,Hecho a mano,2026-03-19 04:16:05.700398+00
+45,home_about_stats_countrys_value,10+,2026-03-19 04:16:05.700398+00
+46,home_about_stats_countrys_label,Diseños exclusivos,2026-03-19 04:16:05.700398+00
+47,home_about_stats_products_value,10+,2026-03-19 04:16:05.700398+00
+48,home_about_stats_products_label,Años de experiencia,2026-03-19 04:16:05.700398+00
+59,footer_schedule_days_2,,2026-03-19 04:16:05.700398+00
+60,footer_schedule_hours_2,,2026-03-19 04:16:05.700398+00
+61,footer_social_facebook,,2026-03-19 04:16:05.700398+00
+62,footer_social_instagram,,2026-03-19 04:16:05.700398+00
